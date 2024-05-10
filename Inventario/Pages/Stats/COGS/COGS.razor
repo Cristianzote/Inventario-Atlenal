@@ -1,0 +1,88 @@
+﻿@page "/stats/cogs"
+@using ChartJs.Blazor.LineChart
+@using ChartJs.Blazor
+
+@if (platform == "WinUI")
+{
+    <div class="flex w-full justify-center">
+        <div class="mb-24 w-5/6">
+            <Chart Config="_config"></Chart>
+        </div>
+    </div>
+}
+else
+{
+    <div class="flex w-full justify-center">
+        <div class="mb-24 w-5/6">
+            <Chart Config="_config" Width="1" Height="2"></Chart>
+        </div>
+    </div>
+}
+
+@code {
+    private LineConfig _config;
+
+    protected override void OnInitialized()
+    {
+        _config = new LineConfig
+            {
+                Options = new LineOptions
+                {
+                    Responsive = true,
+                    Title = new OptionsTitle
+                    {
+                        Display = false,
+                        Text = "Costo de bienes vendidos"
+                    }
+                }
+            };
+
+        // Labels (shared for both datasets)
+
+        foreach (string color in new[] { "Febrero", "Marzo", "Abril"})
+        {
+            _config.Data.Labels.Add(color);
+        }
+
+        // First dataset (line) with data points
+        var dataset1 = new LineDataset<int>
+            {
+                Label = "COGS",
+                BackgroundColor = "#007f5f",
+                BorderColor = "#2b9348",
+                BorderWidth = 2
+            };
+
+        dataset1.AddRange(new[] { 5, 10, 10 });
+
+        // Second dataset (line) with data points
+        var dataset2 = new LineDataset<int>
+            {
+                Label = "Inv. inicial",
+                BackgroundColor = "#bfd200",
+                BorderColor = "#d4d700",
+                BorderWidth = 2
+            };
+
+        dataset2.AddRange(new[] { 15, 20, 25 });
+
+        // Second dataset (line) with data points
+        var dataset3 = new LineDataset<int>
+            {
+                Label = "Inv. final",
+                BackgroundColor = "#eeef20",
+                BorderColor = "#ffff3f",
+                BorderWidth = 2
+            };
+
+        dataset3.AddRange(new[] { 10, 10, 15 });
+
+        // Add datasets to the chart configuration
+        _config.Data.Datasets.Add(dataset1);
+        _config.Data.Datasets.Add(dataset2);
+        _config.Data.Datasets.Add(dataset3);
+    }
+
+    string platform = DeviceInfo.Current.Platform.ToString();
+    
+}

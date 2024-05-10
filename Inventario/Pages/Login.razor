@@ -1,0 +1,77 @@
+﻿@page "/login"
+@inject NavigationManager navigationManager
+
+
+<div class="px-6 py-12 flex min-h-full flex-col justify-center lg:px-8">
+
+    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+        <h2 class="mt-10 text-gray-900 text-center text-2xl font-bold leading-9 tracking-tight">Ingresa a tu cuenta</h2>
+    </div>
+
+    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div class="space-y-6">
+            <div>
+                <label for="email" class="text-gray-900 block text-sm font-medium leading-6">Dirección de correo</label>
+                <div class="mt-2">
+                    <input @bind="Email" name="email" type="email" autocomplete="email" required class="py-1.5 text-gray-900 ring-gray-300 block w-full rounded-md border-0 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+            </div>
+
+            <div>
+                <div class="flex items-center justify-between">
+                    <label for="password" class="text-gray-900 block text-sm font-medium leading-6">Contraseña</label>
+                    <div class="text-sm">
+                        <a href="#" class="text-indigo-600 font-semibold hover:text-indigo-500">¿Olvidaste tu contraseña?</a>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <input @bind="Password" name="password" type="password" autocomplete="current-password" required class="py-1.5 text-gray-900 ring-gray-300 block w-full rounded-md border-0 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+            </div>
+
+            <!--<div>
+                <button @onclick="LoginAsync" type="submit" class="bg-indigo-600 px-3 py-1.5 text-white flex w-full justify-center rounded-md text-sm font-semibold leading-6 shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Ingresar</button>
+            </div>-->
+        </div>
+
+        <p class="mt-10 text-gray-500 text-center text-sm">
+            ¿No tienes cuenta?
+            <a href="#" class="text-indigo-600 font-semibold leading-6 hover:text-indigo-500">Registrate</a>
+        </p>
+    </div>
+</div>
+
+@code {
+
+
+    private string Email { get; set; } = string.Empty;
+    private string Password { get; set; } = string.Empty;
+
+
+
+    //private async Task LoginAsync()
+    //{
+    //  var response = await Access.API.Users.GetUser(Email, Password);
+
+
+
+
+    //var responseHttp = await repository.Post<LoginDTO, TokenDTO>("/api/accounts/Login", loginDTO);
+        /*if (responseHttp.Error)
+            {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }*/
+
+        //await loginService.LoginAsync(responseHttp.Response!.Token);
+      
+        //private LoginDTO loginDTO = new();
+
+        //var session = await supabase.Auth.SignUp(loginDTO.Email, loginDTO.Password);
+
+        //navigationManager.NavigateTo("/");
+    //}
+
+
+}

@@ -1,0 +1,74 @@
+﻿@page "/stats/ndi"
+@using ChartJs.Blazor.LineChart
+
+@if (platform == "WinUI")
+{
+    <div class="w-full flex justify-center">
+        <div class=" w-5/6 mb-24">
+            <Chart Config="_config"></Chart>
+        </div>
+    </div>
+}
+else
+{
+    <div class="w-full flex justify-center">
+        <div class=" w-5/6 mb-24">
+            <Chart Config="_config" Width="1" Height="2"></Chart>
+        </div>
+    </div>
+}
+
+@code {
+    private LineConfig _config;
+
+    protected override void OnInitialized()
+    {
+        _config = new LineConfig
+            {
+                Options = new LineOptions
+                {
+                    Responsive = true,
+                    Title = new OptionsTitle
+                    {
+                        Display = false,
+                        Text = "Este mes"
+                    }
+                }
+            };
+
+        // Labels (shared for both datasets)
+
+        foreach (string color in new[] { "Febrero", "Marzo", "Abril"})
+        {
+            _config.Data.Labels.Add(color);
+        }
+
+        // First dataset (line) with data points
+        var dataset1 = new LineDataset<int>
+            {
+                Label = "Valor entradas",
+                BackgroundColor = "#16a34a",
+                BorderColor = "#14532d",
+                BorderWidth = 2
+            };
+
+        dataset1.AddRange(new[] { 4000000, 3600000, 4000000 });
+
+        // Second dataset (line) with data points
+        var dataset2 = new LineDataset<int>
+            {
+                Label = "Valor salidas",
+                BackgroundColor = "#e11d48",
+                BorderColor = "#881337",
+                BorderWidth = 2
+            };
+
+        dataset2.AddRange(new[] { 8000000, 5400000, 10400000 });
+
+        // Add datasets to the chart configuration
+        _config.Data.Datasets.Add(dataset1);
+        _config.Data.Datasets.Add(dataset2);
+    }
+
+    string platform = DeviceInfo.Current.Platform.ToString();
+}

@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inventario", "Inventario\Inventario.csproj", "{0CF8C34F-0C2A-4025-A569-EDD7376E7D94}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Access.API", "Access.API\Access.API.csproj", "{9E72C542-2D1B-4CFC-A59B-D716D23AFAC9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0CF8C34F-0C2A-4025-A569-EDD7376E7D94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CF8C34F-0C2A-4025-A569-EDD7376E7D94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CF8C34F-0C2A-4025-A569-EDD7376E7D94}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{0CF8C34F-0C2A-4025-A569-EDD7376E7D94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CF8C34F-0C2A-4025-A569-EDD7376E7D94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CF8C34F-0C2A-4025-A569-EDD7376E7D94}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{9E72C542-2D1B-4CFC-A59B-D716D23AFAC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E72C542-2D1B-4CFC-A59B-D716D23AFAC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E72C542-2D1B-4CFC-A59B-D716D23AFAC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E72C542-2D1B-4CFC-A59B-D716D23AFAC9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {399A8BAA-C76E-442F-874C-00B5C4C9AAE9}
+	EndGlobalSection
+EndGlobal

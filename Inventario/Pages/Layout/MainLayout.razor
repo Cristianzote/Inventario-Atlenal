@@ -1,0 +1,30 @@
+﻿@inherits LayoutComponentBase
+@using Inventario.Pages.Layout
+
+<div class="page">
+
+    <main>
+        <article>
+            @Body
+        </article>
+    </main>
+
+    <NavMenu />
+
+</div>
+
+@code {
+    private string currentView = "view1";
+
+    private async Task ChangeView(string viewName)
+    {
+        if (currentView != viewName)
+        {
+            await JSRuntime.InvokeVoidAsync("changeView", viewName);
+            currentView = viewName;
+        }
+    }
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; }
+}

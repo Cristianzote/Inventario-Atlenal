@@ -1,0 +1,96 @@
+﻿@page "/movements"
+@using Inventario.Pages.Movements
+
+<div class="bg-white mx-auto shadow-lg">
+    <div class="top-0 pt-2 pb-1 bg-green-800 sticky z-10">
+        <div class="mb-2 flex justify-around">
+            
+            <button class="text-md bg-green-800 text-white p-4 flex items-center rounded-full font-medium shadow-md hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-800 focus:ring-opacity-50">
+                <a href="/movements/create/outcome/1" class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                    </svg>
+
+                    <p>Registrar salida</p>
+                </a>
+            </button>
+            <button class="text-md bg-green-800 text-white p-4 flex items-center rounded-full font-medium shadow-md hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-800 focus:ring-opacity-50">
+                <a href="/movements/create/inflow/1" class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+
+                    <p>Registrar entrada</p>
+                </a>
+            </button>
+        </div>
+        <div class="gap-1 flex justify-around">
+            <button class="bg-green-600 ring-offset-background bg-background h-10 px-4 py-1 relative flex inline-flex w-full items-center items-center justify-center overflow-auto whitespace-nowrap rounded text-lg font-medium transition-colors hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hover:text-white">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
+                </svg>
+                <p>Todos</p>
+            </button>
+            <button class="bg-green-600 ring-offset-background bg-background h-10 px-4 py-1 relative flex inline-flex w-full items-center items-center justify-center overflow-auto whitespace-nowrap rounded text-lg font-medium transition-colors hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hover:text-white">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                </svg>
+                <p>Salidas</p>
+            </button>
+            <button class="bg-green-600 ring-offset-background bg-background h-10 px-4 py-1 relative flex inline-flex w-full items-center items-center justify-center overflow-auto whitespace-nowrap rounded text-lg font-medium transition-colors hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hover:text-white">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                <p>Entradas</p>
+            </button>
+            <button class="w-32 bg-green-600 ring-offset-background bg-background h-10 px-4 py-1 relative flex inline-flex items-center items-center justify-center overflow-auto whitespace-nowrap rounded text-lg font-medium transition-colors hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hover:text-white">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect width="12" height="8" x="6" y="14"></rect>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <div>
+        <div class="relative w-full overflow-auto">
+
+            <table class="border-green-300 w-full caption-bottom text-sm">
+                <thead class="bg-green-600 text-lg">
+                    <tr class="border-b transition-colors">
+                        <th class="h-12 px-4 text-muted-foreground text-left align-middle">Fecha</th>
+                        <th class="h-12 px-4 text-muted-foreground text-left align-middle">ID</th>
+                        <th class="h-12 px-4 text-muted-foreground text-left align-middle">Total</th>
+                        <th class="h-12 px-4 text-muted-foreground text-left align-middle">Tipo</th>
+                    </tr>
+                </thead>
+                <tbody class="text-md">
+                    <tr class="h-12 border-b transition-colors hover:bg-green-500">
+                        <td class="p-2 align-middle">05/10/24</td>
+                        <td class="p-2 align-middle">25</td>
+                        <td class="p-2 align-middle">$ 64.000</td>
+                        <td class="p-2 align-middle">Entrada</td>
+                    </tr>
+                    <tr class="h-12 border-b transition-colors hover:bg-green-500">
+                        <td class="p-2 align-middle">05/10/24</td>
+                        <td class="p-2 align-middle">23</td>
+                        <td class="p-2 align-middle">$ 64.000</td>
+                        <td class="p-2 align-middle">Entrada</td>
+                    </tr>
+                    @for (int i = 0; i < 15; i++)
+                    {
+                        <tr class="h-12 border-b transition-colors hover:bg-green-500">
+                            <td class="p-2 align-middle">04/10/24</td>
+                            <td class="p-2 align-middle">19</td>
+                            <td class="p-2 align-middle">$ 64.000</td>
+                            <td class="p-2 align-middle">Entrada</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+}
