@@ -9,4 +9,13 @@ namespace Access.API
         public DateTimeOffset DATE { get; set; }
     }
 
+    public enum CategoryType
+    {
+        SODA = 1,
+        ALCOHOLIC = 2,
+        SNACK = 3,
+        OTHER = 4,
+        DRINK = 5,
+        ALL
+    }
 }

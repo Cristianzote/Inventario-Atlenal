@@ -4,11 +4,11 @@ namespace Access.API
 {
     public class Transaction
     {
-        public int ID_TRANSACTION { get; set; }
-        public float VALUE { get; set; }
-        public DateTimeOffset DATE { get; set; }
-        public TransactionType TYPE { get; set; }
-        public List<TransactionDetail> TransactionDetail { get; set; }
+        public int idTransaction { get; set; }
+        public float value { get; set; }
+        public DateTimeOffset date { get; set; }
+        public TransactionType type { get; set; }
+        public List<TransactionDetail> transactionDetail { get; set; }
     }
 
     public enum TransactionType

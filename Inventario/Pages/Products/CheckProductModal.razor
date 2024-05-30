@@ -1,5 +1,7 @@
 ﻿@inject IJSRuntime Js
 
+@inject NavigationManager navigationManager;
+
 
 <!-- Main modal -->
 <div id="updateProductModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
@@ -13,12 +15,11 @@
                     Ron viejo de Caldas
                 </h3>
                 <div>
-                    <a href="/product/detail">
+                    <a href="/product/detail/@ID">
                         <button id="editButton" type="button" class="bg-yellow-500 text-white px-1 py-1 rounded-md hover:bg-yellow-600">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
                             </svg>
-
                         </button>
                     </a>
 
@@ -40,29 +41,29 @@
                         <th class="h-12 px-2 text-muted-foreground align-middle">Cantidad</th>
                         <th class="h-12 px-2 text-muted-foreground align-middle">Precio entrada</th>
                         <th class="h-12 px-2 text-muted-foreground align-middle">Precio salida</th>
+                        <th class="h-12 px-2 text-muted-foreground align-middle">Precio salida menudeada</th>
                         <th class="h-12 px-2 text-muted-foreground align-middle">Trago/Menudeado</th>
                     </tr>
                 </thead>
                 <tbody class="text-md bg-green-50">
-                    <tr class="h-12 border-b transition-colors hover:bg-green-500">
-                        <td class="p-2 align-middle">Media</td>
-                        <td class="p-2 align-middle">17</td>
-                        <td class="p-2 align-middle">$20.000</td>
-                        <td class="p-2 align-middle">$30.000</td>
-                        <td class="p-2 align-middle">No</td>
-                    </tr>
-                    <tr class="h-12 border-b transition-colors hover:bg-green-500">
-                        <td class="p-2 align-middle">Garrafa</td>
-                        <td class="p-2 align-middle">14</td>
-                        <td class="p-2 align-middle">$37.000</td>
-                        <td class="p-2 align-middle">$55.000</td>
-                        <td class="p-2 align-middle">Sí</td>
-                    </tr>
-
-                    <!--@foreach (var presentation in presentations)
+                    @foreach (Access.API.Presentation presentation in presentations)
                     {
-                        <option>@presentation</option>
-                    }-->
+                        <tr class="h-12 border-b transition-colors hover:bg-green-500">
+                            <td class="p-2 align-middle">@presentation.name</td>
+                            <td class="p-2 align-middle">@presentation.stock</td>
+                            <td class="p-2 align-middle">$@presentation.priceIncome</td>
+                            <td class="p-2 align-middle">$@presentation.priceOutput</td>
+                            <td class="p-2 align-middle">$@presentation.priceRetail</td>
+                            @if (presentation.retailStockRatio <= 1)
+                            {
+                                <td class="p-2 align-middle">Sí</td>
+                            }
+                            else
+                            {
+                                <td class="p-2 align-middle">No</td>
+                            }
+                        </tr>
+                    }
 
                 </tbody>
             </table>
@@ -72,12 +73,19 @@
 
 @code {
 
-    IEnumerable<string> presentations = [];
+    IEnumerable<Access.API.Presentation> presentations = [];
+    int ID = 0;
 
-    public void Toogle(IEnumerable<string> presentations)
+    public void Toogle(IEnumerable<Access.API.Presentation> presentations, int ID)
     {
         this.presentations = presentations;
+        this.ID = ID;
         Js.InvokeVoidAsync("ShowModal", "updateProductModal", "closeButton", "editButton");
         StateHasChanged();
+    }
+
+    protected void GoToProductDetails()
+    {
+        navigationManager.NavigateTo($"/product/detail/1");
     }
 }

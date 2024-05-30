@@ -1,107 +1,103 @@
-﻿@page "/product/detail"
+﻿@page "/product/detail/{IdProduct}"
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
+@using System.Net.Http;
+@using System.Net.Http.Json;
+@using Inventario.Pages.Products;
+@using Access.API;
 
 <div class="pb-24 pt-8 bg-green-800">
     <div class="w-5/6 mx-auto bg-white p-6 rounded-lg shadow-md ring-2 ring-green-700">
-        <h1 class="text-lg font-medium text-green-900 mb-4">Detalles de Ron viejo de Caldas</h1>
+        @if (ProductResponse != null)
+        {
+            <h1 class="text-lg font-medium text-green-900 mb-4">Detalles de @ProductResponse.name</h1>
 
-        <!-- Product Name -->
-        <div class="mb-6">
-            <label for="name" class="block text-sm font-medium text-green-900 mb-1">Nombre del producto</label>
-            <input type="text" id="name" name="name" value="Ron viejo de Caldas" class="w-full py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
-        </div>
-
-        <!-- Product Category (Select Dropdown) -->
-        <div class="mb-6">
-            <label for="category" class="block text-sm font-medium text-green-900 mb-1">Categoría</label>
-            <select id="category" name="category" class="w-full py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
-                <option value="alcohol">Alcohol</option>
-                <option value="gaseosa">Gaseosa</option>
-                <option value="bebidas">Bebidas</option>
-                <option value="medicina">Medicina</option>
-                <option value="otros">Otros</option>
-            </select>
-        </div>
-
-        <!-- Presentation 1 Component -->
-        <div class="mb-6 border-b border-green-300 pb-4">
-            <h2 class="text-lg font-medium text-green-900 mb-4">Presentación 1</h2>
-
-            <!-- Name of Presentation -->
-            <div class="mb-4">
-                <label for="presentationName" class="block text-sm font-medium text-green-900 mb-1">Nombre de la presentación</label>
-                <input type="text" id="presentationName" name="presentationName" value="Media" class="w-full py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+            <!-- Product Name -->
+            <div class="mb-6">
+                <label for="name" class="block text-sm font-medium text-green-900 mb-1">Nombre del producto</label>
+                <input type="text" id="name" name="name" @bind="@ProductResponse.name" class="w-full py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
             </div>
 
-            <!-- Income Price and Outcome Price (Combined) -->
-            <div class="flex justify-between mb-4">
-                <div class="w-1/2 pr-2">
-                    <label for="incomePrice" class="block text-sm font-medium text-green-900 mb-1">Precio de entrada</label>
-                    <input type="number" id="incomePrice" name="incomePrice" value="20000" class="w-full py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+            <!-- Product Category (Select Dropdown) -->
+            <div class="mb-6">
+                <label for="category" class="block text-sm font-medium text-green-900 mb-1">Categoría</label>
+                <select @bind="@ProductResponse.category" id="category" name="category" class="w-full py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+                    <option value="@((int)CategoryType.ALL)">Todos</option>
+                    <option value="@((int)CategoryType.SODA)">Gaseosa</option>
+                    <option value="@((int)CategoryType.ALCOHOLIC)">Trago</option>
+                    <option value="@((int)CategoryType.DRINK)">Trago</option>
+                    <option value="@((int)CategoryType.SNACK)">Mekato</option>
+                </select>
+            </div>
+
+            @for (int i = 0; i < presentationArray.Length; i++)
+            {
+                <label for="presentationName" class="block text-sm font-medium text-green-900 mb-1"></label>
+
+                <div class="mb-6 border-b border-green-300 pb-4">
+                    
+                    <div class="w-full flex justify-between">
+                        <h2 class="text-lg font-medium text-green-900 mb-4">Presentación @(i + 1)</h2>
+                        <div class="flex justify-center">
+                            <button @onclick="() => DeletePresentation(i)" type="submit" class="bg-red-400 inline-block bg-fuchsia-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring focus:ring-red-200 transition duration-300">Eliminar</button>
+                        </div>
+                    </div>
+
+                    <!-- Name of Presentation -->
+                    <div class="mb-4">
+                        <label for="presentationName" class="block text-sm font-medium text-green-900 mb-1">Nombre de la presentación</label>
+                        <input type="text" id="presentationName" name="name" @bind="presentationArray[i].name" class="w-full py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+                    </div>
+
+                    <!-- Income Price and Outcome Price (Combined) -->
+                    <div class="flex justify-between mb-4">
+                        <div class="w-1/2 pr-2">
+                            <label for="incomePrice" class="block text-sm font-medium text-green-900 mb-1">Precio de entrada</label>
+                            <input type="number" id="incomePrice" name="incomePrice" @bind="@presentationArray[i].priceIncome" class="w-full py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+                        </div>
+                        <div class="w-1/2 pl-2">
+                            <label for="outcomePrice" class="block text-sm font-medium text-green-900 mb-1">Precio de salida</label>
+                            <input type="number" id="outcomePrice" name="outcomePrice" @bind="@presentationArray[i].priceOutput" class="w-full py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+                        </div>
+                    </div>
+
+                    <!-- Detail Sale Switch -->
+                    <div>
+                        <div class="flex items-center mb-4">
+                            <input @bind="@detailCheckbox[i]" id="@($"detailSale{i}")" name="@($"detailSale{i}")" type="checkbox" class="h-4 w-4 bg-green-500 text-green-900 focus:ring focus:ring-green-500 border border-green-300 rounded mr-2">
+
+                            <label for="@($"detailSale{i}")" class="text-sm font-medium text-green-900">¿Presentación con venta menudeada?</label>
+                        </div>
+
+                        @if (detailCheckbox[i])
+                        {
+                            <!-- Detail Count Input (Shown if Detail Sale Switch is checked) -->
+                            <div class="flex items-center">
+                                <label for="detailCount" class="text-sm font-medium text-green-900">Descartar una unidad cada </label>
+                                <input type="number" id="detailCount" name="detailCount" @bind="@presentationArray[i].retailStockRatio" class="mx-2 w-16 py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500 ml-2">
+                                <label for="detailCount" class="text-sm font-medium text-green-900"> ventas menudeadas</label>
+                            </div>
+                        }
+                    </div>
                 </div>
-                <div class="w-1/2 pl-2">
-                    <label for="outcomePrice" class="block text-sm font-medium text-green-900 mb-1">Precio de salida</label>
-                    <input type="number" id="outcomePrice" name="outcomePrice" value="30000" class="w-full py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+            }
+        }
+        else
+        {
+            <div class="flex min-h-screen items-center justify-center w-full">
+                <div class="p-8 rounded-lg">
+                    <svg aria-hidden="true" class="w-10 h-10 text-gray-200 fill-green-600 inline animate-spin dark:text-gray-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                    </svg>
+                    <span class="sr-only">Cargando...</span>
                 </div>
             </div>
-
-            <!-- Detail Sale Switch -->
-            <div class="flex items-center mb-4">
-                <input id="detailSale" name="detailSale" type="checkbox" class="h-4 w-4 bg-green-500 text-green-900 focus:ring focus:ring-green-500 border border-green-300 rounded mr-2">
-                <label for="detailSale" class="text-sm font-medium text-green-900">¿Presentación con venta menudeada?</label>
-            </div>
-
-            <!-- Detail Count Input (Shown if Detail Sale Switch is checked) -->
-            <div class="flex items-center">
-                <label for="detailCount" class="text-sm font-medium text-green-900">Descartar una unidad cada </label>
-                <input type="number" id="detailCount" name="detailCount" class="mx-2 w-16 py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500 ml-2">
-                <label for="detailCount" class="text-sm font-medium text-green-900"> ventas menudeadas</label>
-            </div>
-        </div>
-
-        <!-- Presentation 2 Component -->
-        <div class="mb-6 border-b border-green-300 pb-4">
-            <div class="w-full flex justify-between">
-                <h2 class="text-lg font-medium text-green-900 mb-2">Presentación 2</h2>
-                <div class="flex justify-center">
-                    <button type="submit" class="bg-red-400 inline-block bg-fuchsia-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring focus:ring-red-200 transition duration-300">Eliminar</button>
-                </div>
-            </div>
-
-            <!-- Name of Presentation -->
-            <div class="mb-4">
-                <label for="presentationName" class="block text-sm font-medium text-green-900 mb-1">Nombre de la presentación</label>
-                <input type="text" id="presentationName" name="presentationName" value="Garrafa" class="w-full py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
-            </div>
-
-            <!-- Income Price and Outcome Price (Combined) -->
-            <div class="flex justify-between mb-4">
-                <div class="w-1/2 pr-2">
-                    <label for="incomePrice" class="block text-sm font-medium text-green-900 mb-1">Precio de entrada</label>
-                    <input type="number" id="incomePrice" name="incomePrice" value="37000" class="w-full py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
-                </div>
-                <div class="w-1/2 pl-2">
-                    <label for="outcomePrice" class="block text-sm font-medium text-green-900 mb-1">Precio de salida</label>
-                    <input type="number" id="outcomePrice" name="outcomePrice" value="55000" class="w-full py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
-                </div>
-            </div>
-
-            <!-- Detail Sale Switch -->
-            <div class="flex items-center mb-4">
-                <input id="detailSale" name="detailSale" type="checkbox" class="h-4 w-4 bg-green-500 text-green-900 focus:ring focus:ring-green-500 border border-green-300 rounded mr-2">
-                <label for="detailSale" class="text-sm font-medium text-green-900">¿Presentación con venta menudeada?</label>
-            </div>
-
-            <!-- Detail Count Input (Shown if Detail Sale Switch is checked) -->
-            <div class="flex items-center">
-                <label for="detailCount" class="text-sm font-medium text-green-900">Descartar una unidad cada </label>
-                <input type="number" id="detailCount" name="detailCount" value="12" class="mx-2 w-16 py-2 px-3 bg-green-500 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500 ml-2">
-                <label for="detailCount" class="text-sm font-medium text-green-900"> ventas menudeadas</label>
-            </div>
-        </div>
+        }
 
         <!-- Plus Button (to add more presentations) -->
         <div class="flex justify-center mb-6">
-            <button type="button" class="bg-green-400 inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-full focus:outline-none focus:ring focus:ring-green-200 transition duration-300">
+            <button @onclick="AddPresentation" type="button" class="bg-green-400 inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-full focus:outline-none focus:ring focus:ring-green-200 transition duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
@@ -121,5 +117,64 @@
 </div>
 
 @code {
+    [Parameter]
+    public string IdProduct { get; set; }
 
+    Product ProductResponse;
+    Presentation[] presentationArray = Array.Empty<Presentation>();
+    bool[] detailCheckbox = Array.Empty<bool>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            HttpClient client = new HttpClient();
+            ProductResponse = await client.GetFromJsonAsync<Product>($"http://www.baratlenal.somee.com/api/v1/product/{IdProduct}");
+            presentationArray = ProductResponse.presentations.ToArray();
+
+            ResizeCheckboxArray(presentationArray);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    protected void ResizeCheckboxArray(Presentation[] presentations)
+    {
+        Array.Resize(ref detailCheckbox, presentations.Length);
+        for (int i = 0; i < detailCheckbox.Length; i++)
+        {
+            detailCheckbox[i] = presentations[i].retailStockRatio != 1 && presentations[i].retailStockRatio != 0;
+        }
+    }
+
+    protected void AddPresentation()
+    {
+        Presentation NewPresentation = new Presentation();
+        Array.Resize(ref presentationArray, presentationArray.Length + 1);
+        presentationArray[^1] = NewPresentation;
+
+        ResizeCheckboxArray(presentationArray);
+    }
+
+    protected void ToggleDetail(int i)
+    {
+        if (i >= 0 && i < detailCheckbox.Length)
+        {
+            detailCheckbox[i] = !detailCheckbox[i];
+        }
+    }
+
+    protected void DeletePresentation(int Id)
+    {
+        if (Id >= 0 && Id < presentationArray.Length)
+        {
+            var presentationsList = presentationArray.ToList();
+            presentationsList.RemoveAt(Id);
+            presentationArray = presentationsList.ToArray();
+
+            ResizeCheckboxArray(presentationArray);
+        }
+    }
 }

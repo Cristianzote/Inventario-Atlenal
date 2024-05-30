@@ -1,5 +1,4 @@
 ﻿using Inventario.Pages.Products;
-using Windows.System;
 using System.Net.Http;
 using System.Threading.Tasks;
 

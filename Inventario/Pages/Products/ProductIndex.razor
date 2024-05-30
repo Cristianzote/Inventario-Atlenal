@@ -1,91 +1,82 @@
 ﻿@page "/product"
 @inject NavigationManager navigationManager
 
-
 <!--//Json imports-->
 @using System.Text.Json;
 @using System.Text.Json.Serialization;
 @using System.Net.Http;
 @using System.Net.Http.Json;
 @using Inventario.Pages.Products;
+@using Access.API;
 
 <div class="sticky top-0 z-10 pt-2 pb-1 bg-green-800">
     <div class="flex justify-around mb-2">
-        <input class="w-2/5 py-2 px-3 bg-green-500 text-green-900 placeholder-green-900 border border-green-900 rounded-md focus:outline-none focus:ring focus:ring-green-900"
+        <input @oninput="HandleInputChange" class="w-2/5 py-2 px-3 bg-white text-green-900 placeholder-green-900 border border-green-900 rounded-md focus:outline-none focus:ring focus:ring-green-900"
             type="search"
             placeholder="Buscar productos..." />
-        <select id="category" name="category" class="w-2/5 py-2 px-3 bg-green-500 text-green-900 border border-green-900 rounded-md focus:outline-none focus:ring focus:ring-green-900">
-            <option value="todos">Todos</option>
-            <option value="gaseosa">Gaseosa</option>
-            <option value="bebidas">Bebidas</option>
-            <option value="alcohol">Alcohol</option>
-            <option value="medicina">Medicina</option>
-            <option value="otros">Otros</option>
+        <select @bind="selectedCategory" id="category" name="category" class="w-2/5 py-2 px-3 bg-white text-green-900 border border-green-900 rounded-md focus:outline-none focus:ring focus:ring-green-900">
+            <option value="@CategoryType.ALL">Todos</option>
+            <option value="@CategoryType.SODA">Gaseosa</option>
+            <option value="@CategoryType.ALCOHOLIC">Trago</option>
+            <option value="@CategoryType.SNACK">Mekato</option>
+            <option value="@CategoryType.OTHER">Otros</option>
         </select>
     </div>
 </div>
 
-<!-- PRODUCTOS -->
-<section class="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4 p-4 md:p-6">
-
-    @for(int i = 0; i < 15; i++)
+@if (ProductsResponse != null && ProductsResponse.Any())
+{
+    <!-- PRODUCTOS -->
+    <section class="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 p-4 md:p-6 gap-4">
+        @foreach (Product product in ProductsResponse.Where(FilterProduct))
+        {
+            <div @onclick="() => modal.Toogle(product.presentations, product.idProduct)" class="cursor-pointer bg-white rounded-lg shadow-md shadow-green-800/20 overflow-hidden">
+                <div class="m-2 p-2 bg-white rounded-lg">
+                    <img src="/images/@(product.category).png"
+                         alt="Product Image"
+                         width="180"
+                         height="180"
+                         class="w-full object-cover aspect-square"
+                         style="aspect-ratio: 1 / 1; object-fit: cover;" />
+                </div>
+                <div class="px-4 py-1">
+                    <h3 class="font-semibold text-sm md:text-base text-center">@product.name</h3>
+                    @switch (product.category)
+                    {
+                        case (int)CategoryType.SODA:
+                            <p class="font-medium text-sm md:text-base text-slate-600 text-center">Gaseosa</p>
+                            break;
+                        case (int)CategoryType.ALCOHOLIC:
+                            <p class="font-medium text-sm md:text-base text-slate-600 text-center">Trago</p>
+                            break;
+                        case (int)CategoryType.SNACK:
+                            <p class="font-medium text-sm md:text-base text-slate-600 text-center">Mekato</p>
+                            break;
+                        case (int)CategoryType.DRINK:
+                            <p class="font-medium text-sm md:text-base text-slate-600 text-center">Mekato</p>
+                            break;
+                        case (int)CategoryType.OTHER:
+                            <p class="font-medium text-sm md:text-base text-slate-600 text-center">Otro</p>
+                            break;
+                    }
+                </div>
+            </div>
+        }
+    </section>
+    }
+    else
     {
-        int aux = i;
-
-        <div @onclick="() => modal.Toogle([aux.ToString()])" class="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden">
-            <img src="https://cdn-icons-png.freepik.com/512/803/803728.png"
-                    alt="Product Image"
-                    width="180"
-                    height="180"
-                    class="w-full object-cover aspect-square"
-                    style="aspect-ratio: 1 / 1; object-fit: cover;" />
-            <div class="p-4">
-                <h3 class="font-semibold text-sm md:text-base text-center">Ron viejo de Caldas</h3>
-                <p class="font-medium text-sm md:text-base text-slate-600 text-center">Alcochol</p>
-            </div>
-        </div>
-
-        <div @onclick="() => modal.Toogle([aux.ToString()])" class="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden">
-            <img src="https://cdn-icons-png.freepik.com/512/803/803728.png"
-                    alt="Product Image"
-                    width="180"
-                    height="180"
-                    class="w-full object-cover aspect-square"
-                    style="aspect-ratio: 1 / 1; object-fit: cover;" />
-            <div class="p-4">
-                <h3 class="font-semibold text-sm md:text-base text-center">Aguardiente antioqueño</h3>
-                <p class="font-medium text-sm md:text-base text-slate-600 text-center">Alcochol</p>
-            </div>
-        </div>
-
-        <div @onclick="() => modal.Toogle([aux.ToString()])" class="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden">
-            <img src="https://cdn-icons-png.freepik.com/512/803/803728.png"
-                    alt="Product Image"
-                    width="180"
-                    height="180"
-                    class="w-full object-cover aspect-square"
-                    style="aspect-ratio: 1 / 1; object-fit: cover;" />
-            <div class="p-4">
-                <h3 class="font-semibold text-sm md:text-base text-center">CocaCola</h3>
-                <p class="font-medium text-sm md:text-base text-slate-600 text-center">Gaseosa</p>
-            </div>
-        </div>
-
-        <div @onclick="() => modal.Toogle([aux.ToString()])" class="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden">
-            <img src="https://cdn-icons-png.freepik.com/512/803/803728.png"
-                    alt="Product Image"
-                    width="180"
-                    height="180"
-                    class="w-full object-cover aspect-square"
-                    style="aspect-ratio: 1 / 1; object-fit: cover;" />
-            <div class="p-4">
-                <h3 class="font-semibold text-sm md:text-base text-center">Tinto</h3>
-                <p class="font-medium text-sm md:text-base text-slate-600 text-center">Bebida</p>
+        <div class="flex min-h-screen items-center justify-center w-full">
+            <div class="p-8 rounded-lg">
+                <svg aria-hidden="true" class="w-10 h-10 text-gray-200 fill-green-600 inline animate-spin dark:text-gray-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                </svg>
+                <span class="sr-only">Cargando...</span>
             </div>
         </div>
     }
     
-</section>
 
 <div class="fixed bottom-24 right-4">
     <button class="bg-green-800 text-white rounded-full p-4 shadow-md hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-00 focus:ring-opacity-50 flex items-center">
@@ -104,47 +95,32 @@
 <CheckProductModal @ref=modal />
 
 @code {
+    List<Product> ProductsResponse;
+    private string searchText = string.Empty;
+    private CategoryType selectedCategory = CategoryType.ALL;
 
-    //CheckProductModal modal;
-
-    private JsonElement userData;
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            /*Console.WriteLine("Holi");
-            using (var httpClient = new HttpClient())
-            {
-                var response = await httpClient.GetAsync("http://localhost:5175/api/v1/product");
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(jsonString);
-                }
-            }*/
-
-
-            HttpClient cliente = new HttpClient();
-
-            cliente.BaseAddress = new Uri("http://api.inventory.linapps.co/");
-
-
-            var response = cliente.GetAsync($"http://localhost:5175/api/v1/product");
-
-            //var body = await response.Content.ReadAsStringAsync();
+            HttpClient client = new HttpClient();
+            ProductsResponse = await client.GetFromJsonAsync<List<Product>>("http://www.baratlenal.somee.com/api/v1/product");
+            //StateHasChanged(); // Manually trigger UI update
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Console.WriteLine(ex.Message);
         }
     }
 
+    private void HandleInputChange(ChangeEventArgs e)
+    {
+        searchText = e.Value?.ToString() ?? string.Empty;
+    }
 
-    //public List<SProduct>? Products { get; set; }
-
-
-    //public string Products = "a";
-
-    //Products = await repository.Get<List<Product>>("https://pokeapi.co/api/v2/pokemon/ditto").Response!;
-
+    private bool FilterProduct(Product product)
+    {
+        return (product.category == (int)selectedCategory || selectedCategory == CategoryType.ALL) &&
+               (string.IsNullOrEmpty(searchText) || product.name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+    }
 }
