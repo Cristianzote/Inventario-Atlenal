@@ -5,6 +5,7 @@
 @using System.Net.Http.Json;
 @using Inventario.Pages.Movements;
 @using Access.API;
+@using System.Globalization;
 
 @inject NavigationManager navigationManager;
 
@@ -62,10 +63,10 @@
                 <table class="border-green-300 w-full caption-bottom text-sm mb-24">
                     <thead class="bg-green-600 text-lg">
                         <tr class="border-b transition-colors">
-                            <th class="h-12 px-4 text-muted-foreground text-left align-middle">Fecha</th>
-                            <th class="h-12 px-4 text-muted-foreground text-left align-middle">ID</th>
-                            <th class="h-12 px-4 text-muted-foreground text-left align-middle">Total</th>
-                            <th class="h-12 px-4 text-muted-foreground text-left align-middle">Tipo</th>
+                            <th class="h-12 px-4 text-muted-foreground text-left align-middle text-center">Fecha</th>
+                            <th class="h-12 px-4 text-muted-foreground text-left align-middle text-center">ID</th>
+                            <th class="h-12 px-4 text-muted-foreground text-left align-middle text-center">Total</th>
+                            <th class="h-12 px-4 text-muted-foreground text-left align-middle text-center">Tipo</th>
                         </tr>
                     </thead>
                     <tbody class="text-md">
@@ -73,24 +74,14 @@
                         {
                             if (TypeFilter == 0 || transaction.type == TypeFilter)
                             {
-                                <tr class="h-12 border-b transition-colors hover:bg-green-500">
-                                    <td class="p-2 align-middle">@FormatDate(transaction.date)</td>
-                                    <td class="p-2 align-middle">@transaction.idTransaction</td>
-                                    <td class="p-2 align-middle">$@transaction.value</td>
-                                    <td class="p-2 align-middle">@transaction.type</td>
+                                <tr @onclick="() => modal.Toogle(transaction)" class="h-12 border-b transition-colors hover:bg-green-500 cursor-pointer">
+                                    <td class="p-2 align-middle text-center">@FormatDate(transaction.date)</td>
+                                    <td class="p-2 align-middle text-center">@transaction.idTransaction</td>
+                                    <td class="p-2 align-middle text-center">$@FormatAsMoney((int)transaction.value)</td>
+                                    <td class="p-2 align-middle text-center">@(transaction.type == TransactionType.INCOME ? "Entrada" : "Salida")</td>
                                 </tr>
                             }
                         }
-
-                        <!--@for (int i = 0; i < 15; i++)
-                        {
-                            <tr class="h-12 border-b transition-colors hover:bg-green-500">
-                                <td class="p-2 align-middle">04/10/24</td>
-                                <td class="p-2 align-middle">19</td>
-                                <td class="p-2 align-middle">$ 64.000</td>
-                                <td class="p-2 align-middle">Entrada</td>
-                            </tr>
-                        }-->
                     </tbody>
                 </table>
             }
@@ -110,10 +101,14 @@
     </div>
 </div>
 
+<MovementDetailModal @ref=modal />
+
 @code {
     // Declare ProductsResponse at the component level
     List<Transaction> TransactionsResponse;
     TransactionType TypeFilter = 0;
+
+    MovementDetailModal modal;
 
     protected override async Task OnInitializedAsync()
     {
@@ -139,6 +134,22 @@
         string formattedDateTimeOffset = DATE.ToString("M/d/yyyy h:mm:ss tt");
 
         return formattedDateTimeOffset;
+    }
+
+    public static string FormatAsMoney(int value)
+    {
+        // Create a CultureInfo object for the desired culture
+        var cultureInfo = new CultureInfo("es-CO"); // Spanish (Colombia) culture for example
+
+        // Set custom number format
+        cultureInfo.NumberFormat.CurrencyGroupSeparator = "'";
+        cultureInfo.NumberFormat.CurrencyDecimalSeparator = ".";
+        cultureInfo.NumberFormat.CurrencySymbol = ""; // Remove currency symbol
+        cultureInfo.NumberFormat.CurrencyGroupSizes = new int[] { 3 }; // Groups of 3 digits
+
+        // Format the value as currency and remove the leading space
+        string formattedValue = value.ToString("N0", cultureInfo);
+        return formattedValue.Trim();
     }
 
     protected void GoToCreateInflow()

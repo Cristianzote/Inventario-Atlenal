@@ -7,6 +7,7 @@
 @using System.Net.Http.Json;
 @using Inventario.Pages.Products;
 @using Access.API;
+@using System.Globalization;
 
 @inject NavigationManager navigationManager;
 
@@ -89,39 +90,54 @@
         {
             @for (int i = 0; i < transactionDetails.Length; i++ )
             {
+                var localIndex = i; // Capture the current value of i
                 <div class="p-3 space-y-1 sm:p-4">
                     <div class="bg-white p-3 flex flex-col items-center justify-between rounded-lg shadow-md sm:flex-row">
                         <div class="mb-2 sm:mb-0">
                             <h3 class="text-md font-medium">@GetProductName(transactionDetails[i].presentations.product)</h3>
-                            <p class="text-gray-500">@transactionDetails[i].presentations.name</p>
+                            <p class="text-gray-500">@transactionDetails[localIndex].presentations.name</p>
+                            @if (Type == "inflow")
+                            {
+                                <p class="text-gray-500">$@FormatAsMoney(((int)transactionDetails[localIndex].presentations.priceIncome))</p>
+                            }
+                            else
+                            {
+                                <p class="text-gray-500">$@(transactionDetails[localIndex].detail == true ? FormatAsMoney(((int)transactionDetails[localIndex].presentations.priceRetail)) : FormatAsMoney(((int)transactionDetails[localIndex].presentations.priceOutput)))</p>
+                            }
                         </div>
                         <div>
                             <div class="space-x-4 flex items-center">
                                 <div class="space-x-2 flex items-center">
-                                    <button @onclick="()=>ChangeQuantity((i-1), false)" class="bg-green-600 px-1 py-1 rounded-l-md hover:bg-green-400">-</button>
-                                    <input @bind="transactionDetails[i].quantity" type="number" min="1" max="@transactionDetails[i].presentations.stock" class="accent-gray-200 appearance-auto forced-colors:appearance-auto h-8 w-8 bg-gray-200 text-green-900 border-green-300 rounded border focus:ring focus:ring-green-500">
-                                    <button @onclick="()=>ChangeQuantity((i-1), true)" class="bg-green-600 px-1 py-1 rounded-r-md hover:bg-green-400">+</button>
+                                    <button @onclick="()=>ChangeQuantity(localIndex, false)" class="bg-green-600 px-1 py-1 rounded-l-md hover:bg-green-400">-</button>
+                                    <input @bind="transactionDetails[localIndex].quantity" type="number" min="1" max="@transactionDetails[localIndex].presentations.stock" class="text-center accent-gray-100 appearance-auto forced-colors:appearance-auto h-8 w-8 bg-gray-100 text-green-900 border-green-300 rounded border focus:ring focus:ring-green-500">
+                                    <button @onclick="()=>ChangeQuantity(localIndex, true)" class="bg-green-600 px-1 py-1 rounded-r-md hover:bg-green-400">+</button>
                                 </div>
                                 @if (platform == "WinUI")
                                 {
-                                    <button class="bg-red-500 text-white px-1 py-1 rounded-md hover:bg-red-600">Eliminar</button>
+                                    <button @onclick="()=>RemoveDetail(localIndex)" class="bg-red-500 text-white px-1 py-1 rounded-md hover:bg-red-600">Eliminar</button>
                                 }
                                 else
                                 {
-                                    <button class="bg-red-500 text-white px-1 py-1 rounded-md hover:bg-red-600">X</button>
+                                    <button @onclick="()=>RemoveDetail(localIndex)" class="bg-red-500 text-white px-1 py-1 rounded-md hover:bg-red-600">X</button>
                                 }
                             </div>
 
                             <div class="space-x-4 mt-2 flex items-center">
-                                @if (Type != "inflow" && transactionDetails[i].presentations.retailStockRatio > 1)
+
+                                @if (Type != "inflow")
                                 {
-                                    <input @bind="transactionDetails[i].detail" id="detailSale" name="detailSale" type="checkbox" class="accent-red-700 appearance-auto h-4 w-4 bg-green-500 text-green-900 border-green-300 rounded border focus:ring focus:ring-green-500" disabled>
+                                    if (transactionDetails[localIndex].presentations.retailStockRatio > 1)
+                                    {
+                                        <input @bind="transactionDetails[localIndex].detail" id="detailSale" name="detailSale" type="checkbox" class="accent-green-700 appearance-auto forced-colors:appearance-auto h-4 w-4 bg-green-500 text-green-900 border-green-300 rounded border focus:ring focus:ring-green-500">
+                                        <label class="text-green-900 text-sm">¿Venta menudeada / trago?</label>
+                                    }
+                                    else
+                                    {
+                                        <input @bind="transactionDetails[localIndex].detail" id="detailSale" name="detailSale" type="checkbox" class="accent-red-700 h-4 w-4 bg-green-500 text-green-900 border-green-300 rounded border focus:ring focus:ring-green-500" disabled>
+                                        <label class="text-green-900 text-sm">¿Venta menudeada / trago?</label>
+                                    }
                                 }
-                                else
-                                {
-                                    <input @bind="transactionDetails[i].detail" id="detailSale" name="detailSale" type="checkbox" class="accent-green-700 appearance-auto forced-colors:appearance-auto h-4 w-4 bg-green-500 text-green-900 border-green-300 rounded border focus:ring focus:ring-green-500">
-                                }
-                                <label class="text-green-900 text-sm">¿Venta menudeada / trago?</label>
+                                
                             </div>
 
                         </div>
@@ -143,14 +159,14 @@
     <!-- Pay check -->
     <div class="bottom-0 right-0 bg-green-800 py-2 px-6 mb-14 mr-2.5 fixed flex w-2/5 items-center justify-between place-items-end">
         <div class="pt-2 flex justify-center text-center text-lg font-bold">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
             </svg>
-            <p class="text-green-950">Total: $@TotalPrice(transactionDetails)</p>
+            <p class="text-white">Total: $@FormatAsMoney(((int)TotalPrice(transactionDetails)))</p>
         </div>
         <div class="space-x-4 flex">
             <div class="flex justify-end">
-                <button type="button" class="mr-4 bg-red-500 text-white py-2 px-4 inline-block rounded-md font-semibold transition duration-300 hover:bg-red-700 focus:outline-none focus:ring focus:ring-red-200">Cancelar</button>
+                <button @onclick="CancelMovement" type="button" class="mr-4 bg-red-500 text-white py-2 px-4 inline-block rounded-md font-semibold transition duration-300 hover:bg-red-700 focus:outline-none focus:ring focus:ring-red-200">Cancelar</button>
                 <button @onclick="()=>CreateTransaction(transaction, transactionDetails)" type="submit" class="bg-green-500 text-white py-2 px-4 mr-4 inline-block rounded-md font-semibold transition duration-300 hover:bg-green-700 focus:outline-none focus:ring focus:ring-green-200">Proceder</button>
              </div>
         </div>
@@ -319,4 +335,32 @@
         }
     }
 
+    //
+    private void RemoveDetail(int index)
+    {
+        var list = transactionDetails.ToList();
+        list.RemoveAt(index);
+        transactionDetails = list.ToArray();
+    }
+
+    private void CancelMovement()
+    {
+        navigationManager.NavigateTo("/movements");
+    }
+
+    public static string FormatAsMoney(int value)
+    {
+        // Create a CultureInfo object for the desired culture
+        var cultureInfo = new CultureInfo("es-CO"); // Spanish (Colombia) culture for example
+
+        // Set custom number format
+        cultureInfo.NumberFormat.CurrencyGroupSeparator = "'";
+        cultureInfo.NumberFormat.CurrencyDecimalSeparator = ".";
+        cultureInfo.NumberFormat.CurrencySymbol = ""; // Remove currency symbol
+        cultureInfo.NumberFormat.CurrencyGroupSizes = new int[] { 3 }; // Groups of 3 digits
+
+        // Format the value as currency and remove the leading space
+        string formattedValue = value.ToString("N0", cultureInfo);
+        return formattedValue.Trim();
+    }
 }
