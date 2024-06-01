@@ -26,6 +26,7 @@
                         <option value="@CategoryType.ALL">Todos</option>
                         <option value="@CategoryType.SODA">Gaseosa</option>
                         <option value="@CategoryType.ALCOHOLIC">Trago</option>
+                        <option value="@CategoryType.DRINK">Bebida</option>
                         <option value="@CategoryType.SNACK">Mekato</option>
                         <option value="@CategoryType.OTHER">Otros</option>
                     </select>
@@ -85,7 +86,7 @@
     </div>
 
     <!-- Details -->
-    <div class="bg-green-600 pb-24 w-2/5 overflow-y-auto sm:w-2/5">
+    <div class="bg-green-700 pb-24 w-2/5 overflow-y-auto sm:w-2/5">
         @if (transactionDetails.Any())
         {
             @for (int i = 0; i < transactionDetails.Length; i++ )
