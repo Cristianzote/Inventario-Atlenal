@@ -11,7 +11,7 @@
 
             <!-- Modal header -->
             <div class="flex justify-between items-center pb-2 rounded-t ">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 class="text-lg font-semibold text-gray-900">
                     Ron viejo de Caldas
                 </h3>
                 <div>
@@ -34,8 +34,8 @@
             </div>
 
             <!-- Modal body -->
-            <table class="border-green-600 w-full caption-bottom text-sm">
-                <thead class="bg-green-600 text-md">
+            <table class="border-green-600 w-full caption-bottom text-sm rounded-lg border-2">
+                <thead class="bg-green-600">
                     <tr class="border-b transition-colors">
                         <th class="h-12 px-2 text-muted-foreground align-middle">Presentación</th>
                         <th class="h-12 px-2 text-muted-foreground align-middle">Cantidad</th>
@@ -48,12 +48,12 @@
                 <tbody class="text-md bg-green-50">
                     @foreach (Access.API.Presentation presentation in presentations)
                     {
-                        <tr class="h-12 border-b transition-colors hover:bg-green-500">
-                            <td class="p-2 align-middle">@presentation.name</td>
-                            <td class="p-2 align-middle">@presentation.stock</td>
-                            <td class="p-2 align-middle">$@presentation.priceIncome</td>
-                            <td class="p-2 align-middle">$@presentation.priceOutput</td>
-                            <td class="p-2 align-middle">$@presentation.priceRetail</td>
+                        <tr class="h-12 border-1 border-green-800 transition-colors hover:bg-green-500">
+                            <td class="p-2 align-middle border-l border-1 border-green-800">@presentation.name</td>
+                            <td class="p-2 align-middle border-l border-1 border-green-800">@presentation.stock</td>
+                            <td class="p-2 align-middle border-l border-1 border-green-800">$@presentation.priceIncome</td>
+                            <td class="p-2 align-middle border-l border-1 border-green-800">$@presentation.priceOutput</td>
+                            <td class="p-2 align-middle border-l border-1 border-green-800">$@presentation.priceRetail</td>
                             @if (presentation.retailStockRatio <= 1)
                             {
                                 <td class="p-2 align-middle">Sí</td>

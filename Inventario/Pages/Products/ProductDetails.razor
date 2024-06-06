@@ -32,41 +32,42 @@
 
             @for (int i = 0; i < presentationArray.Length; i++)
             {
+                var index = i;
                 <label for="presentationName" class="block text-sm font-medium text-green-900 mb-1"></label>
 
                 <div class="mb-6 border-b border-green-300 pb-4">
                     
                     <div class="w-full flex justify-between">
-                        <h2 class="text-lg font-medium text-green-900 mb-4">Presentación @(i + 1)</h2>
+                        <h2 class="text-lg font-medium text-green-900 mb-4">Presentación @(index + 1)</h2>
                         <div class="flex justify-center">
-                            <button @onclick="() => DeletePresentation(i)" type="submit" class="bg-red-400 inline-block bg-fuchsia-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring focus:ring-red-200 transition duration-300">Eliminar</button>
+                            <button @onclick="() => DeletePresentation(index)" type="submit" class="bg-red-400 inline-block bg-fuchsia-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring focus:ring-red-200 transition duration-300">Eliminar</button>
                         </div>
                     </div>
 
                     <!-- Name of Presentation -->
                     <div class="mb-4">
                         <label for="presentationName" class="block text-sm font-medium text-green-900 mb-1">Nombre de la presentación</label>
-                        <input type="text" id="presentationName" name="name" @bind="presentationArray[i].name" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+                        <input type="text" id="presentationName" name="name" @bind="presentationArray[index].name" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
                     </div>
 
                     <!-- Income Price and Outcome Price (Combined) -->
                     <div class="flex justify-between mb-4">
                         <div class="w-1/2 pr-2">
                             <label for="incomePrice" class="block text-sm font-medium text-green-900 mb-1">Precio de entrada</label>
-                            <input type="number" id="incomePrice" name="incomePrice" @bind="@presentationArray[i].priceIncome" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+                            <input type="number" id="incomePrice" name="incomePrice" @bind="@presentationArray[index].priceIncome" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
                         </div>
                         <div class="w-1/2 pl-2">
                             <label for="outcomePrice" class="block text-sm font-medium text-green-900 mb-1">Precio de salida</label>
-                            <input type="number" id="outcomePrice" name="outcomePrice" @bind="@presentationArray[i].priceOutput" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+                            <input type="number" id="outcomePrice" name="outcomePrice" @bind="@presentationArray[index].priceOutput" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
                         </div>
                     </div>
 
                     <!-- Detail Sale Switch -->
                     <div>
                         <div class="flex items-center mb-4">
-                            <input @bind="@detailCheckbox[i]" id="@($"detailSale{i}")" name="@($"detailSale{i}")" type="checkbox" class="h-4 w-4 bg-gray-100 text-green-900 focus:ring focus:ring-green-500 border border-green-300 rounded mr-2">
+                            <input @bind="@detailCheckbox[index]" id="@($"detailSale{i}")" name="@($"detailSale{index}")" type="checkbox" class="h-4 w-4 bg-gray-100 text-green-900 focus:ring focus:ring-green-500 border border-green-300 rounded mr-2">
 
-                            <label for="@($"detailSale{i}")" class="text-sm font-medium text-green-900">¿Presentación con venta menudeada?</label>
+                            <label for="@($"detailSale{index}")" class="text-sm font-medium text-green-900">¿Presentación con venta menudeada?</label>
                         </div>
 
                         @if (detailCheckbox[i])
@@ -74,7 +75,7 @@
                             <!-- Detail Count Input (Shown if Detail Sale Switch is checked) -->
                             <div class="flex items-center">
                                 <label for="detailCount" class="text-sm font-medium text-green-900">Descartar una unidad cada </label>
-                                <input type="number" id="detailCount" name="detailCount" @bind="@presentationArray[i].retailStockRatio" class="mx-2 w-16 py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500 ml-2">
+                                <input type="number" id="detailCount" name="detailCount" @bind="@presentationArray[index].retailStockRatio" class="mx-2 w-16 py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500 ml-2">
                                 <label for="detailCount" class="text-sm font-medium text-green-900"> ventas menudeadas</label>
                             </div>
                         }
