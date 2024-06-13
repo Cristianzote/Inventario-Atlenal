@@ -169,25 +169,18 @@
 
             // Serialize the transaction object to JSON
             var jsonTransaction = JsonSerializer.Serialize(product, options);
-
-            // Debug: Print the JSON to ensure it's correct
-            Console.WriteLine(jsonTransaction);
-
             var content = new StringContent(jsonTransaction, System.Text.Encoding.UTF8, "application/json");
 
             // Make petition
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.PostAsJsonAsync($"http://www.baratlenal.somee.com/api/v1/product", product);
-
-            // Optionally read the response content
             string responseBody = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(responseBody);
 
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception($"Server error (HTTP {response.StatusCode}): {responseBody}");
             }
-            //If the transaction is succesful
+
             navigationManager.NavigateTo("/product");
         }
         catch (Exception e)

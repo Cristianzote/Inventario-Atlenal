@@ -200,7 +200,7 @@
         {
             HttpClient client = new HttpClient();
             ProductResponse = await client.GetFromJsonAsync<List<Product>>($"http://www.baratlenal.somee.com/api/v1/product");
-
+            Console.WriteLine(ProductResponse);
             //StateHasChanged(); // Manually trigger UI update
         }
         catch (Exception ex)
