@@ -1,4 +1,5 @@
 ﻿global using ChartJs.Blazor.LineChart;
+//using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.Extensions.Logging;
 
 namespace Inventario
@@ -16,6 +17,7 @@ namespace Inventario
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            //builder.Services.AddSweetAlert2();
 
 #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();

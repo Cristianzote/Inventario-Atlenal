@@ -62,23 +62,16 @@
                     </tr>
                 </thead>
                 <tbody class="text-md">
-                    <tr class="h-12 border-b transition-colors hover:bg-green-500">
-                        <td class="p-2 align-middle">Whisky Buchanna's</td>
-                        <td class="p-2 align-middle">Media</td>
-                        <td class="p-2 text-red-900 align-middle">0 dias</td>
-                    </tr>
-                    <tr class="h-12 border-b transition-colors hover:bg-green-500">
-                        <td class="p-2 align-middle">Gaseosa CocaCola zero</td>
-                        <td class="p-2 align-middle">400ML</td>
-                        <td class="p-2 text-yellow-400 align-middle">13 dias</td>
-                    </tr>
-                    @for (int i = 0; i < 15; i++)
+                    @if (CoverageResponse != null)
                     {
-                        <tr class="h-12 border-b transition-colors hover:bg-green-500">
-                            <td class="p-2 align-middle">Gaseosa CocaCola zero</td>
-                            <td class="p-2 align-middle">350ML</td>
-                            <td class="p-2 text-green-400 align-middle">22 dias</td>
-                        </tr>
+                        foreach (Coverage coverage in CoverageResponse.OrderBy(c => c.days).ToList())
+                        {
+                            <tr class="h-12 border-b transition-colors hover:bg-green-500">
+                                <td class="p-2 align-middle">@coverage.product</td>
+                                <td class="p-2 align-middle">@coverage.presentation</td>
+                                <td class="p-2 text-@(coverage.color) align-middle">@coverage.days dias</td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>
@@ -90,17 +83,19 @@
 @code {
     private LineConfig _config;
     private Sales SalesResponse;
+    private List<Coverage> CoverageResponse;
     private IEnumerable<int> Outflows;
     private IEnumerable<int> Incomes;
+    string platform = DeviceInfo.Current.Platform.ToString();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            HttpClient client = new HttpClient();
-            SalesResponse = await client.GetFromJsonAsync<Sales>($"http://localhost:5175/api/v1/stats/sales");
-            Console.WriteLine(SalesResponse);
-            //StateHasChanged(); // Manually trigger UI update
+        HttpClient client = new HttpClient();
+            SalesResponse = await client.GetFromJsonAsync<Sales>($"http://www.baratlenal.somee.com/api/v1/stats/sales");
+            CoverageResponse = await client.GetFromJsonAsync<List<Coverage>>($"http://www.baratlenal.somee.com/api/v1/stats/coverage");
+            Console.WriteLine(CoverageResponse);
         }
         catch (Exception ex)
         {
@@ -114,53 +109,6 @@
             InitializeChart();
         }
     }
-
-    /*protected override void OnInitialized()
-    {
-        _config = new LineConfig
-            {
-                Options = new LineOptions
-                {
-                    Responsive = true,
-                    Title = new OptionsTitle
-                    {
-                        Display = false,
-                        Text = "Este mes"
-                    }
-                }
-            };
-
-        foreach (string date in SalesResponse.date)
-        {
-            _config.Data.Labels.Add(date);
-        }
-
-        var IncomeDataset = new LineDataset<int>
-            {
-                Label = "Salidas",
-                BackgroundColor = "#16a34a",
-                BorderColor = "#14532d",
-                BorderWidth = 2
-            };
-
-        IncomeDataset.AddRange(Outflows);
-
-        // Second dataset (line) with data points
-        var OutflowDataset = new LineDataset<int>
-            {
-                Label = "Entradas",
-                BackgroundColor = "#e11d48",
-                BorderColor = "#881337",
-                BorderWidth = 2
-            };
-
-        OutflowDataset.AddRange(Incomes);
-
-        // Add datasets to the chart configuration
-        _config.Data.Datasets.Add(IncomeDataset);
-        _config.Data.Datasets.Add(OutflowDataset);
-    }
-    */
 
     protected void InitializeChart()
     {
@@ -208,5 +156,4 @@
         _config.Data.Datasets.Add(OutflowDataset);
     }
 
-    string platform = DeviceInfo.Current.Platform.ToString();
 }

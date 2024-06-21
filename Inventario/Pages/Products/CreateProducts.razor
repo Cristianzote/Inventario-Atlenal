@@ -64,9 +64,11 @@
                 <!-- Detail Sale Switch -->
                 <div>
                     <div class="flex items-center mb-4">
-                        <input @bind="@detailCheckbox[index]" id="@($"detailSale{i}")" name="@($"detailSale{index}")" type="checkbox" class="h-4 w-4 bg-gray-100 text-green-900 focus:ring focus:ring-green-500 border border-green-300 rounded mr-2">
-
-                    <label for="@($"detailSale{i}")" class="text-sm font-medium text-green-900">¿Presentación con venta menudeada?</label>
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" @bind="detailCheckbox[index]" class="sr-only peer">
+                            <div class="relative w-11 h-6 bg-gray-100 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-200 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                            <span class="ms-3 text-sm font-medium text-green-900">¿Presentación con venta menudeada?</span>
+                        </label>
                     </div>
 
                    @if (detailCheckbox[i] == true)
@@ -79,6 +81,33 @@
                         </div>
                    }
                 </div>
+
+
+                <!-- Cover -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" @bind="cover[index]" class="sr-only peer">
+                            <div class="relative w-11 h-6 bg-gray-100 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-200 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                            <span class="ms-3 text-sm font-medium text-green-900">¿Cover?</span>
+                        </label>
+                    </div>
+
+                    @if (cover[i] == true)
+                    {
+                        <div class="flex justify-between mb-4">
+                            <div class="w-1/2 pr-2">
+                                <label for="incomePrice" class="block text-sm font-medium text-green-900 mb-1">Salida</label>
+                                <input type="number" id="incomePrice" name="incomePrice" @bind="@presentationArray[index].priceOutputCover" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+                            </div>
+                            <div class="w-1/2 pl-2">
+                                <label for="outcomePrice" class="block text-sm font-medium text-green-900 mb-1">Salida menudeada</label>
+                                <input type="number" id="outcomePrice" name="outcomePrice" @bind="@presentationArray[index].priceRetailCover" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+                            </div>
+                        </div>
+                    }
+                </div>
+
             </div>
         }
 
@@ -99,12 +128,17 @@
     </div>
 </div>
 
-
+<style>
+    body{
+        background-color: #166534;
+    }
+</style>
 @code {
 
     Product product = new Product {};
     Presentation[] presentationArray = [];
     bool[] detailCheckbox = [];
+    bool[] cover = [];
 
     protected void AddPresentation()
     {
@@ -119,7 +153,7 @@
         Array.Resize(ref presentationArray, presentationArray.Length + 1);
         presentationArray[presentationArray.Length - 1] = NewPresentation;
 
-        ResizeCheckboxArray(presentationArray);
+        ResizeArray(presentationArray);
     }
 
     protected void ToggleDetail(int i)
@@ -130,13 +164,27 @@
         }
     }
 
+    protected void ToggleCover(int i)
+    {
+        if (i >= 0 && i < cover.Length)
+        {
+            cover[i] = !cover[i];
+        }
+    }
 
-    protected void ResizeCheckboxArray(Presentation[] presentations)
+
+    protected void ResizeArray(Presentation[] presentations)
     {
         Array.Resize(ref detailCheckbox, presentations.Length);
         for (int i = 0; i < detailCheckbox.Length; i++)
         {
             detailCheckbox[i] = presentations[i].retailStockRatio != 1 && presentations[i].retailStockRatio != 0;
+        }
+
+        Array.Resize(ref cover, presentations.Length);
+        for (int i = 0; i < detailCheckbox.Length; i++)
+        {
+            cover[i] = false;
         }
     }
 
@@ -148,7 +196,7 @@
             presentationsList.RemoveAt(Id);
             presentationArray = presentationsList.ToArray();
 
-            ResizeCheckboxArray(presentationArray);
+            ResizeArray(presentationArray);
         }
     }
 

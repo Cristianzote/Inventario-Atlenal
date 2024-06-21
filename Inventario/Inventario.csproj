@@ -65,16 +65,11 @@
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-    </ItemGroup>
+    </ItemGroup>	
 
     <ItemGroup>
-      <Content Remove="Pages\Movements\MovementDetailModal.razor" />
-    </ItemGroup>
-	
-
-    <ItemGroup>
+        <PackageReference Include="ChartJs.Blazor.Fork" Version="2.0.2" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
-		<PackageReference Include="ChartJs.Blazor.Fork" Version="2.0.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -83,18 +78,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Access.API\Access.API.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <UpToDateCheckInput Remove="Pages\Movements\MovementDetailModal.razor" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Pages\Movements\MovementDetailModal.razor" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Include="Pages\Movements\MovementDetailModal.razor" />
     </ItemGroup>
 
 </Project>
