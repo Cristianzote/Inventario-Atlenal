@@ -4,8 +4,10 @@
 @using System.Net.Http;
 @using System.Net.Http.Json;
 @using Inventario.Pages.Movements;
+@using Inventario.Pages.Layout;
 @using Access.API;
 @using System.Globalization;
+@inject IJSRuntime Js
 
 @inject NavigationManager navigationManager;
 
@@ -47,7 +49,7 @@
                 </svg>
                 <p>Entradas</p>
             </button>
-            <button class="w-32 bg-green-600 ring-offset-background bg-background h-10 px-4 py-1 relative flex inline-flex items-center items-center justify-center overflow-auto whitespace-nowrap rounded text-lg font-medium transition-colors hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
+            <button @onclick="() => swalToast.ToggleToast(SwalToast.Icon.success, SwalToast.SuccessMessages.Test)" class="w-32 bg-green-600 ring-offset-background bg-background h-10 px-4 py-1 relative flex inline-flex items-center items-center justify-center overflow-auto whitespace-nowrap rounded text-lg font-medium transition-colors hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hover:text-white">
                     <polyline points="6 9 6 2 18 2 18 9"></polyline>
                     <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
@@ -74,7 +76,7 @@
                         {
                             if (TypeFilter == 0 || transaction.type == TypeFilter)
                             {
-                                <tr @onclick="() => modal.Toogle(transaction)" class="h-12 border-b transition-colors hover:bg-green-500 cursor-pointer">
+                                <tr @onclick="() => modal.Toogle(transaction, ProductsResponse)" class="h-12 border-b transition-colors hover:bg-green-500 cursor-pointer">
                                     <td class="p-2 align-middle text-center">@FormatDate(transaction.date)</td>
                                     <td class="p-2 align-middle text-center">@transaction.idTransaction</td>
                                     <td class="p-2 align-middle text-center">$@FormatAsMoney((int)transaction.value)</td>
@@ -102,25 +104,31 @@
 </div>
 
 <MovementDetailModal @ref=modal />
+<SwalToast @ref=swalToast />
 
 @code {
     // Declare ProductsResponse at the component level
     List<Transaction> TransactionsResponse;
+    List<Product> ProductsResponse;
     TransactionType TypeFilter = 0;
 
+
     Inventario.Pages.Movements.MovementDetailModal modal;
+    SwalToast swalToast;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             HttpClient client = new HttpClient();
-            List<Transaction> response = await client.GetFromJsonAsync<List<Transaction>>("http://www.baratlenal.somee.com/api/v1/transaction");
+            List<Transaction> response = await client.GetFromJsonAsync<List<Transaction>>("https://www.baratlenal.somee.com/api/v1/transaction");
+            ProductsResponse = await client.GetFromJsonAsync<List<Product>>("https://www.baratlenal.somee.com/api/v1/product");
             TransactionsResponse = response.OrderByDescending(t => t.idTransaction).ToList();
             //StateHasChanged(); // Manually trigger UI update
         }
         catch (Exception ex)
         {
+            await swalToast.ToggleToast(SwalToast.Icon.error, SwalToast.ErrorMessages.Api);
             Console.WriteLine(ex.Message);
         }
     }

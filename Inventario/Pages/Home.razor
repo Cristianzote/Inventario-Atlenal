@@ -93,8 +93,8 @@
         try
         {
             HttpClient client = new HttpClient();
-            SalesResponse = await client.GetFromJsonAsync<Sales>($"http://www.baratlenal.somee.com/api/v1/stats/sales");
-            CoverageResponse = await client.GetFromJsonAsync<List<Coverage>>($"http://www.baratlenal.somee.com/api/v1/stats/coverage");
+            SalesResponse = await client.GetFromJsonAsync<Sales>($"https://www.baratlenal.somee.com/api/v1/stats/sales");
+            CoverageResponse = await client.GetFromJsonAsync<List<Coverage>>($"https://www.baratlenal.somee.com/api/v1/stats/coverage");
             Console.WriteLine(CoverageResponse);
         }
         catch (Exception ex)

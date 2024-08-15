@@ -1,0 +1,66 @@
+﻿@inject IJSRuntime Js
+
+<script>
+    var Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
+
+    function ToggleToast(message, icon) {
+        Toast.fire({
+            icon: icon,
+            title: message
+        });
+    }
+</script>
+
+@code {
+    public async Task ToggleToast(Icon ToastIcon, string ToastMessage)
+    {
+        await Js.InvokeVoidAsync("ToggleToast", ToastMessage, ToastIcon.ToString());
+    }
+
+    public enum Icon
+    {
+        success,
+        error,
+        warning,
+        info,
+        question
+    }
+
+    public static class SuccessMessages
+    {
+        public const string Test = "Funciona!";
+        public const string Create = "Creado exitosamente";
+        public const string Transaction = "Transacción realizada!";
+        public const string Update = "Actualizado exitosamente";
+        public const string Email = "Factura enviada con exito";
+    }
+
+    public static class ErrorMessages
+    {
+        public const string Test = "Funciona!";
+        public const string Create = "Creación fallida";
+        public const string Transaction = "Error al realizar la transacción";
+        public const string Update = "Error al realizar la actualización";
+        public const string Api = "Error al obtener información";
+        public const string Email = "Error enviar factura";
+    }
+
+    public static class InfoMessages
+    {
+        public const string Test = "Funciona!";
+        public const string Create = "Creando...";
+        public const string Transaction = "Creando transacción...";
+        public const string Update = "Actualizando...";
+        public const string Bill = "Abriendo navegador...";
+    }
+}

@@ -1,4 +1,12 @@
 ﻿@page "/stats"
+@using Inventario.Pages.Layout
+@using ChartJs.Blazor.Common
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
+@using System.Net.Http;
+@using System.Net.Http.Json;
+@using Inventario.Pages.Movements;
+@using Access.API;
 
 <div class="w-full flex justify-center">
     <div class="w-2/5 border-2 border-green-600 m-4 rounded-lg">
@@ -36,43 +44,63 @@
 
 <div class="w-full flex justify-center">
     <div class="w-4/5 border-2 border-green-600 m-4 rounded-lg">
-        <div class="w-full bg-green-600">
-            <div class="text-center font-bold text-lg pt-2 flex justify-center w-full">
+        <div class="bg-green-600 w-full">
+            <div class="pt-2 flex w-full justify-center text-center text-lg font-bold">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z" />
                 </svg>
 
                 <p>CDI</p>
             </div>
-            <div class="text-center text-sm p-2">Cobertura de inventario</div>
+            <div class="p-2 text-center text-sm">Cobertura de inventario</div>
         </div>
         <div class="relative w-full overflow-auto">
-            <table class="w-full caption-bottom text-sm border-green-300">
-                <thead class="text-lg bg-green-600">
-                    <tr class="border-b transition-colors ">
-                        <th class="h-12 px-4 text-left align-middle text-muted-foreground">Producto</th>
-                        <th class="h-12 px-4 text-left align-middle text-muted-foreground">Presentación</th>
-                        <th class="h-12 px-4 text-left align-middle text-muted-foreground">Cobertura</th>
+            <!--div-- class="gap-1 flex justify-around">
+                <button class="bg-green-600 ring-offset-background bg-background h-10 px-4 py-1 relative flex inline-flex w-full items-center items-center justify-center overflow-auto whitespace-nowrap rounded text-lg font-medium transition-colors hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hover:text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
+                    </svg>
+                    <p>Todos</p>
+                </button>
+                <button class="bg-green-600 ring-offset-background bg-background h-10 px-4 py-1 relative flex inline-flex w-full items-center items-center justify-center overflow-auto whitespace-nowrap rounded text-lg font-medium transition-colors hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hover:text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                    </svg>
+                    <p>Salidas</p>
+                </button>
+                <button class="bg-green-600 ring-offset-background bg-background h-10 px-4 py-1 relative flex inline-flex w-full items-center items-center justify-center overflow-auto whitespace-nowrap rounded text-lg font-medium transition-colors hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hover:text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                    <p>Entradas</p>
+                </button>
+                <button class="w-32 bg-green-600 ring-offset-background bg-background h-10 px-4 py-1 relative flex inline-flex items-center items-center justify-center overflow-auto whitespace-nowrap rounded text-lg font-medium transition-colors hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hover:text-white">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect width="12" height="8" x="6" y="14"></rect>
+                    </svg>
+                </button>
+            </!--div-->
+            <table class="border-green-300 w-full caption-bottom text-sm">
+                <thead class="bg-green-600 text-lg">
+                    <tr class="border-b transition-colors">
+                        <th class="h-12 px-4 text-muted-foreground text-left align-middle font-medium">Producto</th>
+                        <th class="h-12 px-4 text-muted-foreground text-left align-middle font-medium">Presentación</th>
+                        <th class="h-12 px-4 text-muted-foreground text-left align-middle font-medium">Cobertura</th>
                     </tr>
                 </thead>
                 <tbody class="text-md">
-                    <tr class="border-b transition-colors hover:bg-green-500 h-12">
-                        <td class=" p-2 align-middle">Whisky Buchanna's</td>
-                        <td class=" p-2 align-middle">Media</td>
-                        <td class=" p-2 align-middle text-red-900">0 dias</td>
-                    </tr>
-                    <tr class="border-b transition-colors hover:bg-green-500 h-12">
-                        <td class=" p-2 align-middle">Gaseosa CocaCola zero</td>
-                        <td class=" p-2 align-middle">400ML</td>
-                        <td class=" p-2 align-middle text-yellow-400">13 dias</td>
-                    </tr>
-                    @for (int i = 0; i < 15; i++)
+                    @if (CoverageResponse != null)
                     {
-                        <tr class="border-b transition-colors hover:bg-green-500 h-12">
-                            <td class=" p-2 align-middle">Gaseosa CocaCola zero</td>
-                            <td class=" p-2 align-middle">350ML</td>
-                            <td class=" p-2 align-middle text-green-400">22 dias</td>
-                        </tr>
+                        foreach (Coverage coverage in CoverageResponse.OrderBy(c => c.days).ToList())
+                        {
+                            <tr class="h-12 border-b transition-colors hover:bg-green-500">
+                                <td class="p-2 align-middle">@coverage.product</td>
+                                <td class="p-2 align-middle">@coverage.presentation</td>
+                                <td class="p-2 text-@(coverage.color) align-middle">@coverage.days dias</td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>
@@ -83,4 +111,19 @@
 
 @code {
 
+    private List<Coverage> CoverageResponse;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            HttpClient client = new HttpClient();
+            CoverageResponse = await client.GetFromJsonAsync<List<Coverage>>($"https://www.baratlenal.somee.com/api/v1/stats/coverage");
+            Console.WriteLine(CoverageResponse);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
 }

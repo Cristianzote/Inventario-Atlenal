@@ -1,4 +1,5 @@
 ﻿@page "/product/detail/{IdProduct}"
+@inject NavigationManager navigationManager
 @using System.Text.Json;
 @using System.Text.Json.Serialization;
 @using System.Net.Http;
@@ -65,18 +66,45 @@
                     <!-- Detail Sale Switch -->
                     <div>
                         <div class="flex items-center mb-4">
-                            <input @bind="@detailCheckbox[index]" id="@($"detailSale{i}")" name="@($"detailSale{index}")" type="checkbox" class="h-4 w-4 bg-gray-100 text-green-900 focus:ring focus:ring-green-500 border border-green-300 rounded mr-2">
-
-                            <label for="@($"detailSale{index}")" class="text-sm font-medium text-green-900">¿Presentación con venta menudeada?</label>
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" @bind="detailCheckbox[index]" class="sr-only peer">
+                                <div class="relative w-11 h-6 bg-gray-100 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-200 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                                <span class="ms-3 text-sm font-medium text-green-900">¿Presentación con venta menudeada?</span>
+                            </label>
                         </div>
 
-                        @if (detailCheckbox[i])
+                        @if (detailCheckbox[i] == true)
                         {
                             <!-- Detail Count Input (Shown if Detail Sale Switch is checked) -->
                             <div class="flex items-center">
                                 <label for="detailCount" class="text-sm font-medium text-green-900">Descartar una unidad cada </label>
                                 <input type="number" id="detailCount" name="detailCount" @bind="@presentationArray[index].retailStockRatio" class="mx-2 w-16 py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500 ml-2">
                                 <label for="detailCount" class="text-sm font-medium text-green-900"> ventas menudeadas</label>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Cover -->
+                    <div>
+                        <div class="flex items-center mb-4">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" @bind="cover[index]" class="sr-only peer">
+                                <div class="relative w-11 h-6 bg-gray-100 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-200 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                                <span class="ms-3 text-sm font-medium text-green-900">¿Cover?</span>
+                            </label>
+                        </div>
+
+                        @if (cover[i] == true)
+                        {
+                            <div class="flex justify-between mb-4">
+                                <div class="w-1/2 pr-2">
+                                    <label for="incomePrice" class="block text-sm font-medium text-green-900 mb-1">Salida</label>
+                                    <input type="number" id="incomePrice" name="incomePrice" @bind="@presentationArray[index].priceOutputCover" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+                                </div>
+                                <div class="w-1/2 pl-2">
+                                    <label for="outcomePrice" class="block text-sm font-medium text-green-900 mb-1">Salida menudeada</label>
+                                    <input type="number" id="outcomePrice" name="outcomePrice" @bind="@presentationArray[index].priceRetailCover" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+                                </div>
                             </div>
                         }
                     </div>
@@ -107,12 +135,8 @@
 
         <!-- Submit and Cancel Buttons -->
         <div class="flex justify-end">
-            <button type="submit" class="bg-green-400 inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring focus:ring-green-200 transition duration-300 mr-4">
-                <a href="/product">Guardar</a>
-            </button>
-            <button type="button" class="bg-red-400 inline-block bg-fuchsia-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring focus:ring-red-200 transition duration-300">
-                <a href="/product">Cancelar</a>
-            </button>
+            <button @onclick="()=>UpdateProduct(presentationArray, detailCheckbox)" type="submit" class="bg-green-400 inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring focus:ring-green-200 transition duration-300 mr-4">Actualizar</button>
+            <button @onclick="CancelCreation" type="button" class="bg-red-400 inline-block bg-fuchsia-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring focus:ring-red-200 transition duration-300">Cancelar</button>
         </div>
     </div>
 </div>
@@ -122,15 +146,17 @@
     public string IdProduct { get; set; }
 
     Product ProductResponse;
+    Product product = new Product();
     Presentation[] presentationArray = Array.Empty<Presentation>();
     bool[] detailCheckbox = Array.Empty<bool>();
+    bool[] cover = Array.Empty<bool>();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             HttpClient client = new HttpClient();
-            ProductResponse = await client.GetFromJsonAsync<Product>($"http://www.baratlenal.somee.com/api/v1/product/{IdProduct}");
+            ProductResponse = await client.GetFromJsonAsync<Product>($"https://www.baratlenal.somee.com/api/v1/product/{IdProduct}");
             presentationArray = ProductResponse.presentations.ToArray();
 
             ResizeCheckboxArray(presentationArray);
@@ -143,11 +169,37 @@
 
     protected void ResizeCheckboxArray(Presentation[] presentations)
     {
-        Array.Resize(ref detailCheckbox, presentations.Length);
-        for (int i = 0; i < detailCheckbox.Length; i++)
+        // Preserve existing values for detailCheckbox
+        bool[] newDetailCheckbox = new bool[presentations.Length];
+        for (int i = 0; i < presentations.Length; i++)
         {
-            detailCheckbox[i] = presentations[i].retailStockRatio != 1 && presentations[i].retailStockRatio != 0;
+            if (i < detailCheckbox.Length)
+            {
+                newDetailCheckbox[i] = detailCheckbox[i];
+            }
+            else
+            {
+                // Initialize new entries
+                newDetailCheckbox[i] = presentations[i].retailStockRatio != 1 && presentations[i].retailStockRatio != 0;
+            }
         }
+        detailCheckbox = newDetailCheckbox;
+
+        // Preserve existing values for cover
+        bool[] newCover = new bool[presentations.Length];
+        for (int i = 0; i < presentations.Length; i++)
+        {
+            if (i < cover.Length)
+            {
+                newCover[i] = cover[i];
+            }
+            else
+            {
+                // Initialize new entries
+                newCover[i] = false;
+            }
+        }
+        cover = newCover;
     }
 
     protected void AddPresentation()
@@ -167,6 +219,14 @@
         }
     }
 
+    protected void ToggleCover(int i)
+    {
+        if (i >= 0 && i < cover.Length)
+        {
+            cover[i] = !cover[i];
+        }
+    }
+
     protected void DeletePresentation(int Id)
     {
         if (Id >= 0 && Id < presentationArray.Length)
@@ -179,4 +239,50 @@
         }
     }
 
+
+
+    private async Task UpdateProduct(Presentation[] presentationArray, bool[] detailCheckbox)
+    {
+        var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
+
+        try
+        {
+            // Build transaction body
+            product.presentations = presentationArray.ToList();
+            product.description = string.Empty;
+            product.image = string.Empty;
+            product.name = ProductResponse.name;
+            product.category = ProductResponse.category;
+            product.idProduct = ProductResponse.idProduct;
+
+            // Serialize the transaction object to JSON
+            var jsonTransaction = JsonSerializer.Serialize(product, options);
+            var content = new StringContent(jsonTransaction, System.Text.Encoding.UTF8, "application/json");
+
+            // Make petition
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.PutAsJsonAsync($"https://www.baratlenal.somee.com/api/v1/product", product);
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Server error (HTTP {response.StatusCode}): {responseBody}");
+            }
+
+            navigationManager.NavigateTo("/product");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Request error: {e.Message}");
+        }
+    }
+
+    protected void CancelCreation()
+    {
+        navigationManager.NavigateTo("/product");
+    }
 }

@@ -12,7 +12,7 @@
             <!-- Modal header -->
             <div class="flex justify-between items-center pb-2 rounded-t ">
                 <h3 class="text-lg font-semibold text-gray-900">
-                    Ron viejo de Caldas
+                    @ProductName
                 </h3>
                 <div>
                     <a href="/product/detail/@ID">
@@ -75,11 +75,13 @@
 
     IEnumerable<Access.API.Presentation> presentations = [];
     int ID = 0;
+    string ProductName = string.Empty;
 
-    public void Toogle(IEnumerable<Access.API.Presentation> presentations, int ID)
+    public void Toggle(IEnumerable<Access.API.Presentation> presentations, int ID, string ProductName)
     {
         this.presentations = presentations;
         this.ID = ID;
+        this.ProductName = ProductName;
         Js.InvokeVoidAsync("ShowModal", "updateProductModal", "closeButton", "editButton");
         StateHasChanged();
     }

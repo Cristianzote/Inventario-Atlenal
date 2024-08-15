@@ -5,47 +5,136 @@
 @using System.Net.Http;
 @using System.Net.Http.Json;
 @using System.Globalization;
+@using Inventario.Pages.Layout
 
 <!-- Main modal -->
 <div id="updateProductModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
-    <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
+    <div class="relative p-4 w-full max-w-5xl h-full md:h-auto">
         <!-- Modal content -->
-        <div class="relative p-4 bg-white rounded-lg shadow dark:bg-green-800 sm:p-5">
-            <!-- Modal body -->
-            @if (TransactionData != null)
-            {
-                <!-- Modal header -->
-                <div class="flex justify-between items-center pb-2 rounded-t ">
-                    <h3 class="text-lg font-semibold text-gray-900">
-                        Movimiento @TransactionData.idTransaction
-                    </h3>
-                    <button id="closeButton" type="button" class="text-rose-600 bg-transparent hover:bg-gray-200 hover:text-red-600 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-red-600 dark:hover:text-white" data-modal-toggle="updateProductModal">
-                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+        <div class="relative p-4 bg-green-900 rounded-lg shadow dark:bg-green-800 sm:p-5">
+            <!-- Modal header -->
+            <div class="flex justify-between items-center pb-2 rounded-t ">
+
+                <h3 class="text-lg text-center font-semibold text-green-950">
+                    Detalles del movimiento
+                </h3>
+                <div>
+                    @if (TransactionData != null)
+                    {
+                        <button @onclick="()=>DownloadFile()" type="button" class="bg-green-500 text-white px-1 py-1 rounded-md hover:bg-green-600 ml-2" data-modal-toggle="updateProductModal">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                            </svg>
+                            <span class="sr-only">Download bill</span>
+                        </button>
+                    }
+                    <button id="closeButton" type="button" class="bg-red-500 text-white px-1 py-1 rounded-md hover:bg-red-600" data-modal-toggle="updateProductModal">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
                         <span class="sr-only">Close modal</span>
                     </button>
                 </div>
+            </div>
+            <!-- Modal body -->
+            @if (TransactionData != null)
+            {
+                <div class="mb-4">
+                    <div class="flex">
+                        <label for="location-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Your Email</label>
+                        <div class="relative w-full">
+                            <div class="absolute inset-y-0 start-0 flex items-center ps-1 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="ml-1 size-6 text-green-500">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                                </svg>
+                            </div>
+                            <input @bind=DestinyMail type="email" id="simple-search" class="bg-green-50 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500 block w-full ps-10 p-2.5" placeholder="Correo de destino de factura electronica" required />
+                            <button @onclick="SendEBill" class="absolute top-0 end-0 h-full p-2.5 text-sm font-medium text-white bg-green-500 rounded-e-lg border border-green-700 hover:bg-green-600 focus:ring-4 focus:outline-none focus:ring-green-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                                </svg>
+                                <span class="sr-only">Enviar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-                <table class="border-green-600 w-full caption-bottom text-sm">
-                    <thead class="bg-green-600 text-lg">
+                <table class="border-green-600 w-full table-fixed font-sans mb-4">
+                    <thead class="bg-green-600 text-green-950 uppercase">
                         <tr class="border-b transition-colors">
-                            <th class="h-12 px-4 text-muted-foreground text-left align-middle font-medium">Presentación</th>
-                            <th class="h-12 px-4 text-muted-foreground text-left align-middle font-medium">Cantidad</th>
-                            @if (TransactionData.type != TransactionType.INCOME)
+                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate bg-green-600">ID</th>
+                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate bg-green-600">Valor total</th>
+                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate bg-green-600">Tipo</th>
+                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate bg-green-600">Fecha</th>
+                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate bg-green-600">Mesa</th>
+                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate bg-green-600">Cover</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-md bg-green-50">
+                        <tr id="PresentationRow" class="h-12 border-b transition-colors hover:bg-green-500">
+                            <td class="p-2 align-middle">@TransactionData.idTransaction.ToString()</td>
+                            <td class="p-2 align-middle">@TransactionData.value.ToString("C")</td>
+                            <td class="p-2 align-middle">@(TransactionData.type == TransactionType.INCOME ? "Entrada" : "Salida")</td>
+                            <td class="p-2 align-middle">@TransactionData.date.DateTime</td>
+                            <td class="p-2 align-middle">@TransactionData.table.ToString()</td>
+                            <td class="p-2 align-middle">@(TransactionData.cover == true ? "Sí" : "No")</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="border-green-600 w-full table-fixed font-sans">
+                    <thead class="bg-green-600 text-green-950 uppercase">
+                        <tr class="border-b transition-colors">
+                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate">Producto</th>
+                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate">Presentación</th>
+                            @if (TransactionData.type == TransactionType.OUTPUT)
                             {
-                                <th class="h-12 px-4 text-muted-foreground text-left align-middle font-medium">Menudeada/trago</th>
+                                <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate">Menudeada/trago</th>
                             }
+                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate">Cantidad</th>
+                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate">Precio individual</th>
+                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate">Precio total</th>
                         </tr>
                     </thead>
                     <tbody class="text-md bg-green-50">
                         @foreach (TransactionDetail detail in TransactionData.transactionDetail)
                         {
-                            <tr id="PresentationRow" class="h-12 border-b transition-colors hover:bg-green-500">
-                                <td class="p-2 align-middle">@detail.presentation</td>
-                                <td class="p-2 align-middle">@detail.quantity</td>
-                                @if (TransactionData.type != TransactionType.INCOME)
+                            var currentProduct = products.Where(p => p.presentations.Any(pr => pr.idPresentation == detail.presentation)).FirstOrDefault();
+                            var currentPresentation = currentProduct.presentations.Where(pt => pt.idPresentation == detail.presentation).FirstOrDefault();
+                            var currentPrice = 0.0;
+
+                            if (detail.detail)
+                            {
+                                if (TransactionData.cover && (currentPresentation.priceRetailCover > 1))
                                 {
-                                    <td class="p-2 align-middle">@detail.detail</td>
+                                    currentPrice = currentPresentation.priceRetailCover;
                                 }
+                                else
+                                {
+                                    currentPrice = currentPresentation.priceRetail;
+                                }
+                            }
+                            else
+                            {
+                                if (TransactionData.cover && (currentPresentation.priceOutputCover > 1))
+                                {
+                                    currentPrice = currentPresentation.priceOutputCover;
+                                }
+                                else
+                                {
+                                    currentPrice = currentPresentation.priceOutput;
+                                }
+                            }
+                            <tr id="PresentationRow" class="h-12 border-b transition-colors hover:bg-green-500">
+                                <td class="p-2 align-middle">@currentProduct.name</td>
+                                <td class="p-2 align-middle">@currentPresentation.name</td>
+                                @if (TransactionData.type == TransactionType.OUTPUT)
+                                {
+                                    <td class="p-2 align-middle">@(detail.detail == true ? "Sí" : "No")</td>
+                                }
+                                <td class="p-2 align-middle">@detail.quantity</td>
+                                <td class="p-2 align-middle">@currentPrice.ToString("C")</td>
+                                <td class="p-2 align-middle">@((currentPrice * detail.quantity).ToString("C"))</td>
                             </tr>
                         }
 
@@ -68,33 +157,50 @@
     </div>
 </div>
 
-@code {
-    /*private async Task SelectPresentation(Presentation PRESENTATION)
-            {
-            await OnSelectedPresentation.InvokeAsync(PRESENTATION);
-        }*/
-    Transaction TransactionData;
-    //Product ProductResponse;
+<script>
+    window.openNewWindow = function (url) {
+        window.open(url, '_blank');
+    }
+</script>
 
-    public void Toogle(Transaction TransactionData)
+<SwalToast @ref=swalToast />
+
+@code {
+    Transaction TransactionData;
+    List<Product> products;
+    string DestinyMail = string.Empty;
+
+    Inventario.Pages.Movements.MovementDetailModal modal;
+    SwalToast swalToast;
+
+    public void Toogle(Transaction TransactionData, List<Product> products)
     {
         this.TransactionData = TransactionData;
-        Js.InvokeVoidAsync("ShowModal", "updateProductModal", "closeButton", "PresentationRow");
+        this.products = products;
+        Js.InvokeVoidAsync("ShowModal", "updateProductModal", "closeButton");
         StateHasChanged();
     }
 
-    /*protected override async Task OnInitializedAsync()
+    public async void DownloadFile()
+    {
+        await swalToast.ToggleToast(SwalToast.Icon.info, SwalToast.InfoMessages.Bill);
+        string url = $"https://www.baratlenal.somee.com/api/v1/transaction/bill/{TransactionData.idTransaction}";
+        Js.InvokeVoidAsync("openNewWindow", url);
+    }
+
+    public async void SendEBill()
     {
         try
         {
             HttpClient client = new HttpClient();
-            Product response = await client.GetFromJsonAsync<Product>($"http://www.baratlenal.somee.com/api/v1/product/{TransactionData.}");
-            ProductResponse = response.OrderByDescending(t => t.idTransaction).ToList();
+            Transaction response = await client.GetFromJsonAsync<Transaction>($"https://www.baratlenal.somee.com/api/v1/transaction/SendEmail/{DestinyMail}/{TransactionData.idTransaction}");
+            await swalToast.ToggleToast(SwalToast.Icon.success, SwalToast.SuccessMessages.Email);
             //StateHasChanged(); // Manually trigger UI update
         }
         catch (Exception ex)
         {
+            await swalToast.ToggleToast(SwalToast.Icon.error, SwalToast.ErrorMessages.Email);
             Console.WriteLine(ex.Message);
         }
-    }*/
+    }
 }

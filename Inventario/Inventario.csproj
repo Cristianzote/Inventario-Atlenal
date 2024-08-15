@@ -34,7 +34,7 @@
         <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
         <GenerateTestArtifacts>True</GenerateTestArtifacts>
         <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-        <PackageCertificateKeyFile>Inventario_TemporaryKey.pfx</PackageCertificateKeyFile>
+        <PackageCertificateThumbprint>A4F8C1050CAF45EDCCA75DFAAA1715100D0F4E2B</PackageCertificateThumbprint>
     </PropertyGroup>
 
 
@@ -65,7 +65,7 @@
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-    </ItemGroup>	
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="ChartJs.Blazor.Fork" Version="2.0.2" />
@@ -73,11 +73,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Pages\NewFolder\" />
       <Folder Include="Shared\" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Access.API\Access.API.csproj" />
+      <Reference Include="Access.API">
+        <HintPath>..\Access.API\bin\Release\netstandard2.1\publish\Access.API.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
