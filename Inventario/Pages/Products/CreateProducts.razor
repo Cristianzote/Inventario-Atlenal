@@ -226,40 +226,51 @@
 
     private async Task CreateProduct(Presentation[] presentationArray, bool[] detailCheckbox)
     {
-        var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                WriteIndented = true
-            };
-
-        try
+        if (product.name == null)
         {
-            // Build transaction body
-            product.presentations = presentationArray.ToList();
-            product.description = string.Empty;
-            product.image = string.Empty;
-
-            // Serialize the transaction object to JSON
-            var jsonTransaction = JsonSerializer.Serialize(product, options);
-            var content = new StringContent(jsonTransaction, System.Text.Encoding.UTF8, "application/json");
-
-            // Make petition
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.PostAsJsonAsync($"https://www.baratlenal.somee.com/api/v1/product", product);
-            string responseBody = await response.Content.ReadAsStringAsync();
-
-            if (!response.IsSuccessStatusCode)
-            {
-                await swalToast.ToggleToast(SwalToast.Icon.error, SwalToast.ErrorMessages.Create);
-                throw new Exception($"Server error (HTTP {response.StatusCode}): {responseBody}");
-            }
-
-            await swalToast.ToggleToast(SwalToast.Icon.success, SwalToast.SuccessMessages.Create);
-            navigationManager.NavigateTo("/product");
+            await swalToast.ToggleToast(SwalToast.Icon.warning, SwalToast.FieldMessages.Name);
         }
-        catch (Exception e)
+        else if (product.category == 0)
         {
-            Console.WriteLine($"Request error: {e.Message}");
+            await swalToast.ToggleToast(SwalToast.Icon.warning, SwalToast.FieldMessages.Category);
+        }
+        else
+        {
+            var options = new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
+                };
+
+            try
+            {
+                // Build transaction body
+                product.presentations = presentationArray.ToList();
+                product.description = string.Empty;
+                product.image = string.Empty;
+
+                // Serialize the transaction object to JSON
+                var jsonTransaction = JsonSerializer.Serialize(product, options);
+                var content = new StringContent(jsonTransaction, System.Text.Encoding.UTF8, "application/json");
+
+                // Make petition
+                HttpClient client = new HttpClient();
+                HttpResponseMessage response = await client.PostAsJsonAsync($"https://www.baratlenal.somee.com/api/v1/product", product);
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    await swalToast.ToggleToast(SwalToast.Icon.error, SwalToast.ErrorMessages.Create);
+                    throw new Exception($"Server error (HTTP {response.StatusCode}): {responseBody}");
+                }
+
+                await swalToast.ToggleToast(SwalToast.Icon.success, SwalToast.SuccessMessages.Create);
+                navigationManager.NavigateTo("/product");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Request error: {e.Message}");
+            }
         }
     }
 

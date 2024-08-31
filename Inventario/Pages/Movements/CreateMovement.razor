@@ -296,50 +296,61 @@
     //
     private async Task CreateTransaction(Transaction TRANSACTION, TransactionDetail[] TRANSACTION_DETAIL)
     {
-        await swalToast.ToggleToast(SwalToast.Icon.info, SwalToast.InfoMessages.Transaction);
-        var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                WriteIndented = true
-            };
-
-        try
+        if (transaction.table == 0 && Type != "inflow")
         {
-            // Build transaction body
-            TRANSACTION.transactionDetail = TRANSACTION_DETAIL.ToList();
-            TRANSACTION.value = (int)TotalPrice(transactionDetails);
-            TRANSACTION.type = Type != "inflow" ? TransactionType.OUTPUT : TransactionType.INCOME;
-            TRANSACTION.table = Type != "inflow" ? transaction.table : Table.PIANO;
-            TRANSACTION.cover = cover;
-
-            // Serialize the transaction object to JSON
-            var jsonTransaction = JsonSerializer.Serialize(TRANSACTION, options);
-
-            // Debug: Print the JSON to ensure it's correct
-            Console.WriteLine(jsonTransaction);
-
-            var content = new StringContent(jsonTransaction, System.Text.Encoding.UTF8, "application/json");
-
-            // Make petition
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.PostAsJsonAsync($"https://www.baratlenal.somee.com/api/v1/transaction", TRANSACTION);
-
-            // Optionally read the response content
-            string responseBody = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(responseBody);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                await swalToast.ToggleToast(SwalToast.Icon.error, SwalToast.ErrorMessages.Transaction);
-                throw new Exception($"Server error (HTTP {response.StatusCode}): {responseBody}");
-            }
-            //If the transaction is succesful
-            await swalToast.ToggleToast(SwalToast.Icon.success, SwalToast.SuccessMessages.Transaction);
-            navigationManager.NavigateTo("/movements");
+            await swalToast.ToggleToast(SwalToast.Icon.warning, SwalToast.FieldMessages.Table);
         }
-        catch (Exception e)
+        else if (TRANSACTION_DETAIL.ToList().Any() == false)
         {
-            Console.WriteLine($"Request error: {e.Message}");
+            await swalToast.ToggleToast(SwalToast.Icon.warning, SwalToast.FieldMessages.MovPresentation);
+        }
+        else
+        {
+            await swalToast.ToggleToast(SwalToast.Icon.info, SwalToast.InfoMessages.Transaction);
+            var options = new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
+                };
+
+            try
+            {
+                // Build transaction body
+                TRANSACTION.transactionDetail = TRANSACTION_DETAIL.ToList();
+                TRANSACTION.value = (int)TotalPrice(transactionDetails);
+                TRANSACTION.type = Type != "inflow" ? TransactionType.OUTPUT : TransactionType.INCOME;
+                TRANSACTION.table = Type != "inflow" ? transaction.table : Table.PIANO;
+                TRANSACTION.cover = cover;
+
+                // Serialize the transaction object to JSON
+                var jsonTransaction = JsonSerializer.Serialize(TRANSACTION, options);
+
+                // Debug: Print the JSON to ensure it's correct
+                Console.WriteLine(jsonTransaction);
+
+                var content = new StringContent(jsonTransaction, System.Text.Encoding.UTF8, "application/json");
+
+                // Make petition
+                HttpClient client = new HttpClient();
+                HttpResponseMessage response = await client.PostAsJsonAsync($"https://www.baratlenal.somee.com/api/v1/transaction", TRANSACTION);
+
+                // Optionally read the response content
+                string responseBody = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(responseBody);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    await swalToast.ToggleToast(SwalToast.Icon.error, SwalToast.ErrorMessages.Transaction);
+                    throw new Exception($"Server error (HTTP {response.StatusCode}): {responseBody}");
+                }
+                //If the transaction is succesful
+                await swalToast.ToggleToast(SwalToast.Icon.success, SwalToast.SuccessMessages.Transaction);
+                navigationManager.NavigateTo("/movements");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Request error: {e.Message}");
+            }
         }
     }
 

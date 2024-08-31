@@ -1,27 +1,104 @@
 ﻿@page "/stats/ndi"
 @using ChartJs.Blazor.LineChart
+@using ChartJs.Blazor
+@using Inventario.Pages.Layout
+@using ChartJs.Blazor.Common
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
+@using System.Net.Http;
+@using System.Net.Http.Json;
+@using Inventario.Pages.Movements;
+@using Access.API;
+
+<div class="bg-green-800 w-full text-white">
+    <div class="p-3 flex w-full justify-center text-center text-lg font-bold">
+        <p>Nivel de rotación de inventario</p>
+    </div>
+</div>
 
 @if (platform == "WinUI")
 {
-    <div class="w-full flex justify-center">
-        <div class=" w-5/6 mb-24">
-            <Chart Config="_config"></Chart>
+    if (MonthlyRegisterResponse != null)
+    {
+        <div class="flex w-full justify-center">
+            <div class="mb-24 w-5/6">
+                <Chart Config="_config"></Chart>
+            </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <div role="status" class="w-full p-4 border border-green-200 rounded shadow animate-pulse md:p-6">
+            <div class="h-2.5 bg-green-200 rounded-full w-full mb-2.5"></div>
+            <div class="w-full h-2 mb-10 bg-green-200 rounded-full"></div>
+            <div class="flex items-baseline mt-4 w-full">
+                <div class="w-full bg-green-200 rounded-t-lg h-72 "></div>
+                <div class="w-full h-56 ms-6 bg-green-200 rounded-t-lg"></div>
+                <div class="w-full bg-green-200 rounded-t-lg h-72 ms-6"></div>
+                <div class="w-full h-64 ms-6 bg-green-200 rounded-t-lg"></div>
+                <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                <div class="w-full bg-green-200 rounded-t-lg h-72 ms-6"></div>
+                <div class="w-full bg-red-200 rounded-t-lg h-80 ms-6"></div>
+                <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                <div class="w-full bg-green-200 rounded-t-lg h-72 ms-6"></div>
+                <div class="w-full bg-red-200 rounded-t-lg h-80 ms-6"></div>
+                <div class="w-full bg-red-200 rounded-t-lg h-80 ms-6"></div>
+                <div class="w-full bg-green-200 rounded-t-lg h-72 ms-6"></div>
+                <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                <div class="w-full bg-red-200 rounded-t-lg h-72 ms-6"></div>
+                <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                <div class="w-full bg-green-200 rounded-t-lg h-72 ms-6"></div>
+                <div class="w-full bg-red-200 rounded-t-lg h-80 ms-6"></div>
+            </div>
+            <span class="sr-only">Cargando...</span>
+        </div>
+    }
 }
 else
 {
-    <div class="w-full flex justify-center">
-        <div class=" w-5/6 mb-24">
+    <div class="flex w-full justify-center">
+        <div class="mb-24 w-5/6">
             <Chart Config="_config" Width="1" Height="2"></Chart>
         </div>
     </div>
 }
 
+<SwalToast @ref=swalToast />
 @code {
+    SwalToast swalToast;
     private LineConfig _config;
+    List<MonthlyRegister> MonthlyRegisterResponse;
+    string platform = DeviceInfo.Current.Platform.ToString();
+    IEnumerable<int> COGSValues;
+    IEnumerable<int> NRIValues;
+    IEnumerable<int> InitialInventories;
+    IEnumerable<int> FinalInventories;
+    IEnumerable<int> Purchases;
+    IEnumerable<string> Dates;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            HttpClient client = new HttpClient();
+            MonthlyRegisterResponse = await client.GetFromJsonAsync<List<MonthlyRegister>>($"https://www.baratlenal.somee.com/api/v1/monthly");
+        }
+        catch (Exception ex)
+        {
+            await swalToast.ToggleToast(SwalToast.Icon.error, SwalToast.ErrorMessages.Api);
+            Console.WriteLine(ex.Message);
+        }
+
+        if (MonthlyRegisterResponse != null)
+        {
+            CreateCOGS();
+            InitializeChart();
+        }
+    }
+
+    protected void InitializeChart()
     {
         _config = new LineConfig
             {
@@ -31,44 +108,101 @@ else
                     Title = new OptionsTitle
                     {
                         Display = false,
-                        Text = "Este mes"
+                        Text = "Costo de bienes vendidos"
                     }
                 }
             };
 
         // Labels (shared for both datasets)
 
-        foreach (string color in new[] { "Febrero", "Marzo", "Abril"})
+        foreach (string color in Dates)
         {
             _config.Data.Labels.Add(color);
         }
 
-        // First dataset (line) with data points
-        var dataset1 = new LineDataset<int>
+        // COGS
+        var cogsDataset = new LineDataset<int>
             {
-                Label = "Valor entradas",
-                BackgroundColor = "#16a34a",
-                BorderColor = "#14532d",
+                Label = "COGS",
+                BackgroundColor = "#aacc00",
+                BorderColor = "#80b918",
                 BorderWidth = 2
             };
 
-        dataset1.AddRange(new[] { 4000000, 3600000, 4000000 });
+        cogsDataset.AddRange(COGSValues);
 
-        // Second dataset (line) with data points
-        var dataset2 = new LineDataset<int>
+        // NIR
+        var nriDataset = new LineDataset<int>
             {
-                Label = "Valor salidas",
-                BackgroundColor = "#e11d48",
-                BorderColor = "#881337",
+                Label = "NRI",
+                BackgroundColor = "#522258",
+                BorderColor = "#522258",
                 BorderWidth = 2
             };
 
-        dataset2.AddRange(new[] { 8000000, 5400000, 10400000 });
+        nriDataset.AddRange(NRIValues);
+        // Initial inventory
+        var initialInventoryDataset = new LineDataset<int>
+            {
+                Label = "Inv. inicial",
+                BackgroundColor = "#1e6091",
+                BorderColor = "#184e77",
+                BorderWidth = 2
+            };
+
+        initialInventoryDataset.AddRange(InitialInventories);
+
+        // Final inventory
+        var finalInventoryDataset = new LineDataset<int>
+            {
+                Label = "Inv. final",
+                BackgroundColor = "#168aad",
+                BorderColor = "#1a759f",
+                BorderWidth = 2
+            };
+
+        finalInventoryDataset.AddRange(FinalInventories);
+
+        // Purchases
+        var purchasesDataset = new LineDataset<int>
+            {
+                Label = "Compras",
+                BackgroundColor = "#007f5f",
+                BorderColor = "#2b9348",
+                BorderWidth = 2
+            };
+
+        purchasesDataset.AddRange(Purchases);
 
         // Add datasets to the chart configuration
-        _config.Data.Datasets.Add(dataset1);
-        _config.Data.Datasets.Add(dataset2);
+        _config.Data.Datasets.Add(purchasesDataset);
+        _config.Data.Datasets.Add(cogsDataset);
+        _config.Data.Datasets.Add(nriDataset);
+        _config.Data.Datasets.Add(initialInventoryDataset);
+        _config.Data.Datasets.Add(finalInventoryDataset);
     }
 
-    string platform = DeviceInfo.Current.Platform.ToString();
+    public void CreateCOGS()
+    {
+        var last24Registers = MonthlyRegisterResponse
+        .OrderByDescending(r => r.finalDate) // Sort by FinalDate to get the most recent ones
+        .Take(24)
+        .Reverse() // Reverse to maintain chronological order (oldest first)
+        .ToList();
+
+        InitialInventories = last24Registers.Select(r => r.initialInventory);
+        FinalInventories = last24Registers.Select(r => r.finalInventory);
+        Purchases = last24Registers.Select(r => r.purchases);
+        Dates = last24Registers.Select(r => $"{r.initialDate:yyyy-MM-dd} - {r.finalDate:yyyy-MM-dd}");
+        COGSValues = last24Registers.Select(r => r.initialInventory + r.purchases - r.finalInventory);
+
+        NRIValues = last24Registers
+            .Select(register =>
+        {
+            var cogs = register.initialInventory + register.purchases - register.finalInventory;
+            var averageValue = (register.initialInventory + register.finalInventory) / 2;
+            return averageValue > 0 ? cogs / averageValue : 0;
+        })
+        .ToList();
+    }
 }

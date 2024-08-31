@@ -15,7 +15,7 @@
             <!-- Modal header -->
             <div class="flex justify-between items-center pb-2 rounded-t ">
 
-                <h3 class="text-lg text-center font-semibold text-green-950">
+                <h3 class="text-lg text-center font-semibold text-white">
                     Detalles del movimiento
                 </h3>
                 <div>
@@ -59,21 +59,21 @@
                     </div>
                 </div>
 
-                <table class="border-green-600 w-full table-fixed font-sans mb-4">
-                    <thead class="bg-green-600 text-green-950 uppercase">
+                <table class="border-green-600 w-full font-sans mb-4">
+                    <thead class="bg-green-600 text-green-950">
                         <tr class="border-b transition-colors">
-                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate bg-green-600">ID</th>
-                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate bg-green-600">Valor total</th>
-                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate bg-green-600">Tipo</th>
-                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate bg-green-600">Fecha</th>
-                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate bg-green-600">Mesa</th>
-                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate bg-green-600">Cover</th>
+                            <th class="p-1 align-middle">ID</th>
+                            <th class="p-1 align-middle">Valor total</th>
+                            <th class="p-1 align-middle">Tipo</th>
+                            <th class="p-1 align-middle">Fecha</th>
+                            <th class="p-1 align-middle">Mesa</th>
+                            <th class="p-1 align-middle">Cover</th>
                         </tr>
                     </thead>
                     <tbody class="text-md bg-green-50">
                         <tr id="PresentationRow" class="h-12 border-b transition-colors hover:bg-green-500">
                             <td class="p-2 align-middle">@TransactionData.idTransaction.ToString()</td>
-                            <td class="p-2 align-middle">@TransactionData.value.ToString("C")</td>
+                            <td class="p-2 align-middle">@TransactionData.value.ToString("C0")</td>
                             <td class="p-2 align-middle">@(TransactionData.type == TransactionType.INCOME ? "Entrada" : "Salida")</td>
                             <td class="p-2 align-middle">@TransactionData.date.DateTime</td>
                             <td class="p-2 align-middle">@TransactionData.table.ToString()</td>
@@ -134,7 +134,7 @@
                                 }
                                 <td class="p-2 align-middle">@detail.quantity</td>
                                 <td class="p-2 align-middle">@currentPrice.ToString("C")</td>
-                                <td class="p-2 align-middle">@((currentPrice * detail.quantity).ToString("C"))</td>
+                                <td class="p-2 align-middle">@((currentPrice * detail.quantity).ToString("C0"))</td>
                             </tr>
                         }
 
@@ -185,7 +185,7 @@
     {
         await swalToast.ToggleToast(SwalToast.Icon.info, SwalToast.InfoMessages.Bill);
         string url = $"https://www.baratlenal.somee.com/api/v1/transaction/bill/{TransactionData.idTransaction}";
-        Js.InvokeVoidAsync("openNewWindow", url);
+        await Js.InvokeVoidAsync("openNewWindow", url);
     }
 
     public async void SendEBill()

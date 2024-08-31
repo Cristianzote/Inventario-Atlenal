@@ -1,0 +1,110 @@
+﻿@using Access.API;
+@inject IJSRuntime Js
+
+@inject NavigationManager navigationManager;
+
+<!-- Main modal -->
+<div id="updateProductModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+    <div class="relative p-4 w-full max-w-5xl h-full md:h-auto">
+        <!-- Modal content -->
+        <div class="relative p-4 bg-green-900 rounded-lg shadow sm:p-5">
+            <!-- Modal header -->
+            <div class="flex justify-between items-center pb-2 rounded-t ">
+
+                <h3 class="text-lg text-center font-semibold text-white">
+                    Detalles del gasto 
+                </h3>
+                <div>
+                    <a href="/expenses/detail/@ID">
+                        <button id="editButton" type="button" class="bg-yellow-500 text-white px-1 py-1 rounded-md hover:bg-yellow-600 mr-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                            </svg>
+                        </button>
+                    </a>
+                    <button id="closeButton" type="button" class="bg-red-500 text-white px-1 py-1 rounded-md hover:bg-red-600" data-modal-toggle="updateProductModal">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Modal body -->
+            @if (expense != null)
+            {
+                <table class="border-green-600 w-full table-fixed font-sans">
+                    <thead class="bg-green-600 text-green-950 uppercase">
+                        <tr class="border-b transition-colors">
+                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate">Campo</th>
+                            <th class="h-12 px-2 text-muted-foreground text-left align-middle truncate">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-md bg-green-50">
+                        <tr id="PresentationRow" class="h-12 border-b transition-colors hover:bg-green-500">
+                            <td class="p-2 align-middle">ID</td>
+                            <td class="p-2 align-middle">@expense.idExpense</td>
+                        </tr>
+                        <tr id="PresentationRow" class="h-12 border-b transition-colors hover:bg-green-500">
+                            <td class="p-2 align-middle">Nombre</td>
+                            <td class="p-2 align-middle">@expense.name</td>
+                        </tr>
+                        <tr id="PresentationRow" class="h-12 border-b transition-colors hover:bg-green-500">
+                            <td class="p-2 align-middle">Descripción</td>
+                            <td class="p-2 align-middle text-balance">@expense.description</td>
+                        </tr>
+                        <tr id="PresentationRow" class="h-12 border-b transition-colors hover:bg-green-500">
+                            <td class="p-2 align-middle">Valor</td>
+                            <td class="p-2 align-middle">@expense.value.ToString("C0")</td>
+                        </tr>
+                        <tr id="PresentationRow" class="h-12 border-b transition-colors hover:bg-green-500">
+                            <td class="p-2 align-middle">Multiplicador</td>
+                            <td class="p-2 align-middle">@expense.multiplier</td>
+                        </tr>
+                        <tr id="PresentationRow" class="h-12 border-b transition-colors hover:bg-green-500">
+                            <td class="p-2 align-middle">Tipo</td>
+                            @if (expense.type == ExpenceType.OCCASIONAL)
+                            {
+                                <td class="p-2 align-middle text-teal-600">Ocasional</td>
+                            }
+                            else
+                            {
+                                <td class="p-2 align-middle text-sky-600">Recurrente</td>
+                            }
+                            </tr>
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="flex min-h-screen items-center justify-center w-full">
+                    <div class="p-8 rounded-lg">
+                        <svg aria-hidden="true" class="w-10 h-10 text-gray-200 fill-green-600 inline animate-spin dark:text-gray-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                        </svg>
+                        <span class="sr-only">Cargando...</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    int ID;
+    Expense expense;
+
+    public void Toggle(Expense expense, int ID)
+    {
+        this.ID = ID;
+        this.expense = expense;
+        Js.InvokeVoidAsync("ShowModal", "updateProductModal", "closeButton", "editButton");
+        StateHasChanged();
+    }
+
+    protected void GoToExpenseDetails(int ID)
+    {
+        navigationManager.NavigateTo($"/expenses/edit/{ID}");
+    }
+}

@@ -1,0 +1,136 @@
+﻿@page "/expenses/create"
+@using Access.API;
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
+@using System.Net.Http;
+@using System.Net.Http.Json;
+@using Inventario.Pages.Movements;
+@using Inventario.Pages.Layout;
+@using System.Globalization;
+@inject IJSRuntime Js;
+
+@inject NavigationManager navigationManager;
+
+<div class="pb-24 pt-8 bg-green-800">
+    <div class="w-5/6 mx-auto bg-white p-6 rounded-lg shadow-md ring-2 ring-green-700">
+        <h1 class="text-lg font-medium text-green-900 mb-4">Crear gasto</h1>
+
+        <!-- Expense Name -->
+        <div class="mb-6">
+            <label for="name" class="block text-sm font-medium text-green-900 mb-1">Nombre del gasto</label>
+            <input @bind="expense.name" type="text" id="name" name="name" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+        </div>
+        <!-- Description -->
+        <div class="mb-6">
+            <label for="name" class="block text-sm font-medium text-green-900 mb-1">Descripción del gasto</label>
+            <input @bind="expense.description" type="text" id="name" name="name" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+        </div>
+
+        <!-- Product Category (Select Dropdown) -->
+        <div class="mb-6">
+            <label for="category" class="block text-sm font-medium text-green-900 mb-1">Tipo de gasto</label>
+            <select @bind="@expenseType" id="category" name="category" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500">
+                <option value="@(ExpenceType.RECURRENT)">Recurrente</option>
+                <option value="@(ExpenceType.OCCASIONAL)">Ocacional</option>
+            </select>
+        </div>
+
+        <div class="flex justify-between mb-4">
+            <div class="w-1/2 pr-2">
+                <label for="incomePrice" class="block text-sm font-medium text-green-900 mb-1">Valor</label>
+                <div class="flex">
+                    <span class="inline-flex items-center px-3 text-sm text-white bg-gray-200 border rounded-e-0 border-green-300 border-e-0 rounded-s-md">
+                        <svg class="w-4 h-4 text-green-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M1 4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4Zm12 4a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM4 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm13-1a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM1.75 14.5a.75.75 0 0 0 0 1.5c4.417 0 8.693.603 12.749 1.73 1.111.309 2.251-.512 2.251-1.696v-.784a.75.75 0 0 0-1.5 0v.784a.272.272 0 0 1-.35.25A49.043 49.043 0 0 0 1.75 14.5Z" clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                    <input type="number" @bind="@expense.value" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500" placeholder="Valor">
+                </div>
+            </div>
+            <div class="w-1/2 pl-2">
+                <label for="outcomePrice" class="block text-sm font-medium text-green-900 mb-1">Multiplicador</label>
+                <div class="flex">
+                    <span class="inline-flex items-center px-3 text-sm text-white bg-gray-200 border rounded-e-0 border-green-300 border-e-0 rounded-s-md">
+                        <svg class="w-4 h-4 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 1c-1.716 0-3.408.106-5.07.31C3.806 1.45 3 2.414 3 3.517V16.75A2.25 2.25 0 0 0 5.25 19h9.5A2.25 2.25 0 0 0 17 16.75V3.517c0-1.103-.806-2.068-1.93-2.207A41.403 41.403 0 0 0 10 1ZM5.99 8.75A.75.75 0 0 1 6.74 8h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75v-.01Zm.75 1.417a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75v-.01a.75.75 0 0 0-.75-.75h-.01Zm-.75 2.916a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75v-.01Zm.75 1.417a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75v-.01a.75.75 0 0 0-.75-.75h-.01Zm1.417-5.75a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75v-.01Zm.75 1.417a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75v-.01a.75.75 0 0 0-.75-.75h-.01Zm-.75 2.916a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75v-.01Zm.75 1.417a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75v-.01a.75.75 0 0 0-.75-.75h-.01Zm1.42-5.75a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75v-.01Zm.75 1.417a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75v-.01a.75.75 0 0 0-.75-.75h-.01Zm-.75 2.916a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75v-.01Zm.75 1.417a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75v-.01a.75.75 0 0 0-.75-.75h-.01ZM12.5 8.75a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75v-.01Zm.75 1.417a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75v-.01a.75.75 0 0 0-.75-.75h-.01Zm0 2.166a.75.75 0 0 1 .75.75v2.167a.75.75 0 1 1-1.5 0v-2.167a.75.75 0 0 1 .75-.75ZM6.75 4a.75.75 0 0 0-.75.75v.5c0 .414.336.75.75.75h6.5a.75.75 0 0 0 .75-.75v-.5a.75.75 0 0 0-.75-.75h-6.5Z" clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                    <input type="number" @bind="@expense.multiplier" class="w-full py-2 px-3 bg-gray-100 text-green-900 border border-green-300 rounded-md focus:outline-none focus:ring focus:ring-green-500" placeholder="Multiplicador">
+                </div>
+            </div>
+        </div>
+        <!-- Submit and Cancel Buttons -->
+        <div class="flex justify-end">
+            <button @onclick="()=>CreateNewExpense(expense)" type="submit" class="bg-green-400 inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring focus:ring-green-200 transition duration-300 mr-4">Crear</button>
+            <button @onclick="CancelCreation" type="button" class="bg-red-400 inline-block bg-fuchsia-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring focus:ring-red-200 transition duration-300">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    body {
+        background-color: #166534;
+    }
+</style>
+
+<SwalToast @ref=swalToast />
+
+@code {
+    Expense expense = new Expense
+    {
+        active = true,
+        multiplier = 1
+    };
+    SwalToast swalToast;
+    ExpenceType expenseType;
+
+    private async Task CreateNewExpense(Expense EXPENSE)
+    {
+        if(expense.name == null)
+        {
+            await swalToast.ToggleToast(SwalToast.Icon.warning, SwalToast.FieldMessages.Name);
+        }
+        else if(expense.description == null)
+        {
+            await swalToast.ToggleToast(SwalToast.Icon.warning, SwalToast.FieldMessages.Description);
+        }
+        else if (expenseType == 0)
+        {
+            await swalToast.ToggleToast(SwalToast.Icon.warning, SwalToast.FieldMessages.Category);
+        }
+        else if (expense.value <= 0)
+        {
+            await swalToast.ToggleToast(SwalToast.Icon.warning, SwalToast.FieldMessages.Price);
+        }
+        else if (expense.multiplier <= 0)
+        {
+            await swalToast.ToggleToast(SwalToast.Icon.warning, SwalToast.FieldMessages.Multiplier);
+        }
+        else
+        {
+            expense.type = expenseType;
+            expense.active = true;
+
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.PostAsJsonAsync($"https://www.baratlenal.somee.com/api/v1/expense", EXPENSE);
+
+            string responseBody = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(responseBody);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                await swalToast.ToggleToast(SwalToast.Icon.error, SwalToast.ErrorMessages.Expense);
+                throw new Exception($"Server error (HTTP {response.StatusCode}): {responseBody}");
+            }
+            await swalToast.ToggleToast(SwalToast.Icon.success, SwalToast.SuccessMessages.Expense);
+            navigationManager.NavigateTo("/expenses");
+        }
+    }
+
+    protected void CancelCreation()
+    {
+        navigationManager.NavigateTo("/expenses");
+    }
+}

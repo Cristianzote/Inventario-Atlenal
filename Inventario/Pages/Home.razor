@@ -27,6 +27,35 @@
                         </div>
                     </div>
                 }
+                else
+                {
+                    <div role="status" class="w-full p-4 border border-green-200 rounded shadow animate-pulse md:p-6">
+                        <div class="h-2.5 bg-green-200 rounded-full w-full mb-2.5"></div>
+                        <div class="w-full h-2 mb-10 bg-green-200 rounded-full"></div>
+                        <div class="flex items-baseline mt-4 w-full">
+                            <div class="w-full bg-green-200 rounded-t-lg h-72 "></div>
+                            <div class="w-full h-56 ms-6 bg-green-200 rounded-t-lg"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-72 ms-6"></div>
+                            <div class="w-full h-64 ms-6 bg-green-200 rounded-t-lg"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-72 ms-6"></div>
+                            <div class="w-full bg-red-200 rounded-t-lg h-80 ms-6"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-72 ms-6"></div>
+                            <div class="w-full bg-red-200 rounded-t-lg h-80 ms-6"></div>
+                            <div class="w-full bg-red-200 rounded-t-lg h-80 ms-6"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-72 ms-6"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                            <div class="w-full bg-red-200 rounded-t-lg h-72 ms-6"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-72 ms-6"></div>
+                            <div class="w-full bg-red-200 rounded-t-lg h-80 ms-6"></div>
+                        </div>
+                        <span class="sr-only">Cargando...</span>
+                    </div>
+                }
             }
             else
             {
@@ -36,6 +65,23 @@
                         <div class="mb-24 w-5/6">
                             <Chart Config="_config" Width="1" Height="2"></Chart>
                         </div>
+                    </div>
+                }
+                else
+                {
+                    <div role="status" class="w-full p-4 border border-green-200 rounded shadow animate-pulse md:p-6">
+                        <div class="h-2.5 bg-green-200 rounded-full mb-2.5"></div>
+                        <div class="w-42 h-2 mb-10 bg-green-200 rounded-full"></div>
+                        <div class="flex items-baseline mt-4 w-full">
+                            <div class="w-full bg-green-200 rounded-t-lg h-72 "></div>
+                            <div class="w-full h-56 ms-6 bg-green-200 rounded-t-lg"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-72 ms-6"></div>
+                            <div class="w-full h-64 ms-6 bg-green-200 rounded-t-lg"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-72 ms-6"></div>
+                            <div class="w-full bg-green-200 rounded-t-lg h-80 ms-6"></div>
+                        </div>
+                        <span class="sr-only">Cargando...</span>
                     </div>
                 }
             }
@@ -72,6 +118,22 @@
                                 <td class="p-2 text-@(coverage.color) align-middle">@coverage.days dias</td>
                             </tr>
                         }
+                    }
+                    else
+                    {
+                        <section role="status" class="w-full p-4 space-y-4 border border-green-200 divide-y divide-green-200 rounded shadow animate-pulse">
+                            @for(var i = 0; i < 8; i++)
+                            {
+                                <div class="flex items-center justify-between pt-4 w-full">
+                                    <div>
+                                        <div class="h-2.5 bg-green-300 rounded-full w-24 mb-2.5"></div>
+                                        <div class="w-32 h-2 bg-green-200 rounded-full"></div>
+                                    </div>
+                                    <div class="h-2.5 bg-green-300 rounded-full "></div>
+                                </div>
+                                <span class="sr-only">Cargando...</span>
+                            }
+                        </section>
                     }
                 </tbody>
             </table>
