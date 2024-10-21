@@ -6,6 +6,7 @@ namespace Access.API
         public int idTransactionDetail { get; set; }
         public int quantity { get; set; }
         public bool detail { get; set; }
+        public int discounting { get; set; }
         public int presentation { get; set; }
         public Presentation? presentations { get; set; }
         //public Presentation? Presentation { get; set; }

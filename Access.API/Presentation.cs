@@ -12,9 +12,8 @@ namespace Access.API
         public float priceOutputCover { get; set; }
         public int priceRetail { get; set; }
         public int priceRetailCover { get; set; }
+        public bool hasRetail { get; set; }
         public int stock { get; set; }
-        public int retailStock { get; set; }
-        public int retailStockRatio { get; set; }
         public DateTimeOffset date { get; set; }
         public int product { get; set; }
     }
